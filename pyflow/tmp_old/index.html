@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="{% url 'create-post' %}">Create New Post</a>
+<br>
+{% for item in data %}
+<h2><a href="{% url 'detail' item.post.pk %}">{{ item.post.title }}</a></h2>
+    {% for tag in item.post.tags.all %}
+        <a href="">{{ tag }}</a>
+    {% endfor %}
+<p>rating: {{ item.post_rating }}</p>
+<p>comments: {{ item.post.comments.count }}</p>
+<p>shows: {{ item.post.shows.count }}</p>
+{% endfor %}
+</body>
+</html>

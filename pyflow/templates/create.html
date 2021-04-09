@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %} Create Post {% endblock%}
+
+{% block body %}
+<body class="ask-page unified-theme js-ask-page-v2 floating-content">
+{% endblock%}
+
+{% block content %}
+<div class="container">
+    <div class="pt0 snippet-hidden" id="content">
+        <div class="grid ai-center py24 bg-no-repeat bg-right-bottom wide:bg-image-ask-v2 wide:h-ask-v2-background">
+            <div class="fs-headline1">
+                Create public post
+            </div>
+        </div>
+        <div class="grid ai-start jc-space-between md:fd-column md:ai-stretch">
+            <div class="grid--cell fl1 wmn0">
+                <form action="{% url 'create-post' %}" class="post-form js-post-form" id="post-form" method="post">
+                    {% csrf_token %}
+                    <input name="qualityBanWarningShown" type="hidden" value="False"/>
+                    <input class="js-post-prior-attempt-count" name="priorAttemptCount" type="hidden" value="0"/>
+                    <input name="onboardingTemplate" type="hidden" value=""/>
+                    <input class="js-warned-tags-field" name="warntags" type="hidden"/>
+                    <div id="question-form">
+                        <div class="bg-white bar-sm bs-md p16 ba bc-black-100">
+                            <div class="ps-relative mb16" id="post-title">
+                                <div class="grid fl1 fd-column js-stacks-validation">
+                                    <label class="d-block s-label mb4" for="title">
+                                        Заголовок
+                                        <div class="grid">
+                                            <p class="s-description mt2 grid--cell9">Будьте конкретны. Представьте, что
+                                                вы задаёте вопрос другому человеку.</p>
+                                            <div class="grid--cell3 ta-right text-counter mr0 fs-caption mt2 fl1"></div>
+                                        </div>
+                                    </label>
+                                    <div class="fl1 ps-relative">
+                                        <input class="s-input js-post-title-field" data-max-length="150"
+                                               data-min-length="15" id="title" maxlength="300"
+                                               name="title"
+                                               placeholder="В чём заключается ваш вопрос? Будьте конкретны."
+                                               tabindex="100" type="text"
+                                               value="">
+                                        <svg aria-hidden="true"
+                                             class="s-input-icon js-invalid-alert d-none svg-icon iconAlertCircle"
+                                             height="18" viewBox="0 0 18 18" width="18">
+                                            <path d="M9 17A8 8 0 119 1a8 8 0 010 16zM8 4v6h2V4H8zm0 8v2h2v-2H8z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
+                                </div>
+                                <div class="js-question-suggestions" id="question-suggestions"></div>
+                            </div>
+                            <div class="post-editor js-post-editor mt0 mb16" id="post-editor">
+                                <div class="ps-relative">
+                                    <label class="s-label mb4 d-block" for="wmd-input">
+                                        Основная часть
+                                        <p class="s-description mt2">Добавьте всю информацию, которая может понадобиться
+                                            для ответа на ваш вопрос</p>
+                                    </label>
+                                    <div class="wmd-container mb8">
+                                        <div class="js-stacks-validation">
+                                            <div class="ps-relative">
+                                                <textarea class="wmd-input s-input bar0 js-post-body-field" cols="92"
+                                                          data-min-length=""
+                                                          data-post-type-id="1" id="wmds-input" name="content"
+                                                          rows="15"
+                                                          tabindex="101"></textarea>
+                                            </div>
+                                            <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ps-relative">
+                                    <label class="s-label mb4 d-block" for="wmd-input">
+                                        Код
+                                        <p class="s-description mt2">Добавьте блок кода, который может понадобиться для
+                                            ответа на ваш вопрос</p>
+                                    </label>
+                                    <div class="wmd-container mb8">
+                                        <div class="js-stacks-validation">
+                                            <div class="ps-relative">
+                                                <textarea class="wmd-input s-input bar0 js-post-body-field" cols="92"
+                                                          data-min-length=""
+                                                          data-post-type-id="1" id="wmd-input" name="content_code"
+                                                          rows="15"
+                                                          tabindex="101"></textarea>
+                                            </div>
+                                            <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="grid pb12 fc-light fs-caption gs8">
+                                    <div class="grid--cell">
+                                        ``` <code class="ba bc-black-800 px4 py2 bar-sm bg-black-050 fc-black-800 ff-mono">код</code> ```
+                                    </div>
+                                    <div class="grid--cell fw-bold">
+                                        **полужирный**
+                                    </div>
+                                    <div class="grid--cell fs-italic">
+                                        *курсив*
+                                    </div>
+                                    <div class="grid--cell">
+                                        >цитата
+                                    </div>
+                                </div> -->
+                                <div>
+                                    <div class="fc-success h24" id="draft-saved" style="display:none;">Черновик
+                                        сохранён
+                                    </div>
+                                    <div class="fc-error h24" id="draft-discarded" style="display:none;">Черновик
+                                        удалён
+                                    </div>
+                                </div>
+                                <div class="s-prose mb16 wmd-preview js-wmd-preview" id="wmd-preview"></div>
+                                <div></div>
+                            </div>
+                            <div class="ps-relative" id="tag-editor">
+                                <div class="ps-relative">
+                                    <div class="form-item p0 js-stacks-validation js-tag-editor-container">
+                                        <div class="grid ai-center jc-space-between">
+                                            <label class="s-label mb4 d-block grid--cell fl1" for="tagnames">
+                                                Метки
+                                                <div class="s-description mt2">Добавьте не более 5 меток, описывающих, о
+                                                    чём ваш вопрос
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="ps-relative">
+                                            <div class="grid fw-wrap">
+                                                <div class="grid--cell fl1">
+                                                    <input class="s-input box-border js-post-tags-field" id="tagnames"
+                                                           name="tags" placeholder="например, #python #django"
+                                                           size="60" tabindex="103" type="text"
+                                                           value="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="js-visible-before-review">
+                        <div class="grid gsx gs4 ai-center mt32">
+                            <input class="grid--cell s-btn s-btn__primary s-btn__icon ws-nowrap js-begin-review-button js-gps-track"
+                                    data-gps-track="askpage.review_click" tabindex="120"
+                                    type="submit" value="Сохранить пост">
+                            </input>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="{% url 'edit-post' post.pk %}">Edit Post</a>
+<form method="post" action="{% url 'delete-post' post.pk %}">{% csrf_token %}
+    <input type="submit" value="delete" name="button">
+</form>
+<br>
+<h2>{{ post.title }}</h2>
+<form method="post" action="{% url 'rating' obj_type='post' pk=post.pk %}">{% csrf_token %}
+    <input type="submit" value="like" name="button">
+    <input type="submit" value="dislike" name="button">
+</form>
+Tags:
+{% for tag in post.tags.all %}
+<a href="">{{ tag }}</a>
+{% endfor %}
+<p>{{ post.content }}</p>
+<p>rating: {{ post_rating }}</p>
+<p>comments: {{ post.comments.count }}</p>
+<p>shows: {{ post.shows.count }}</p>
+<br>
+{% for comment in comments %}
+<p>{{ comment.comment.create_at }}</p>
+<form method="post" action="{% url 'delete-comment' comment.comment.pk %}">{% csrf_token %}
+    <input type="submit" value="delete" name="button">
+</form>
+<p>{{ comment.comment.comment }}</p>
+<form method="post" action="{% url 'rating' obj_type='comment' pk=comment.comment.pk %}">{% csrf_token %}
+    <input type="submit" value="like" name="button">
+    <input type="submit" value="dislike" name="button">
+</form>
+<p>rating: {{ comment.comment_rating }}</p>
+{% endfor %}
+<form method="post" action="{% url 'detail' post.pk %}">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Add">
+</form>
+</body>
+</html>

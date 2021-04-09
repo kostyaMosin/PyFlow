@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %} PyFlow {% endblock%}
+
+{% block body %}
+<body class="home-page unified-theme">
+{% endblock%}
+
+{% block content %}
+<div class="container">
+    <div id="content">
+        <div id="mainbar">
+            <div class="grid">
+                <h1 class="grid--cell fl1 fs-headline1">Posts</h1>
+                <div class="ml12 aside-cta grid--cell print:d-none">
+                    <a class="ws-nowrap s-btn s-btn__primary" href="{% url 'create-post' %}">Create Post</a>
+                </div>
+            </div>
+            <div class="grid ai-end mb16 sm:fd-column">
+                <div class="grid--cell fl1 fs-body1 sm:mb16">
+                    {% for tag in tags_popular %}
+                    <a class="post-tag no-tag-menu" href="/?tags=javascript" rel="tag"
+                       title="Показать вопросы о javascript">{{ tag.title }}</a>
+                    {% endfor %}
+<!--                    <a class="post-tag no-tag-menu" href="/?tags=php" rel="tag" title="Показать вопросы о php">php</a>-->
+<!--                    <a class="post-tag no-tag-menu" href="/?tags=java" rel="tag"-->
+<!--                       title="Показать вопросы о java">java</a>-->
+<!--                    <a class="post-tag no-tag-menu" href="/?tags=python" rel="tag" title="Показать вопросы о python">python</a>-->
+<!--                    <a class="post-tag no-tag-menu" href="/?tags=c%23" rel="tag" title="Показать вопросы о c#">c#</a>-->
+<!--                    <a class="post-tag no-tag-menu" href="/?tags=android" rel="tag" title="Показать вопросы о android">android</a>-->
+<!--                    <a class="post-tag no-tag-menu" href="/?tags=html" rel="tag"-->
+<!--                       title="Показать вопросы о html">html</a>-->
+<!--                    <a class="post-tag no-tag-menu" href="/?tags=c%2b%2b" rel="tag"-->
+<!--                       title="Показать вопросы о c++">c++</a>-->
+<!--                    <a class="post-tag no-tag-menu" href="/?tags=css" rel="tag" title="Показать вопросы о css">css</a>-->
+<!--                    <a class="post-tag no-tag-menu" href="/?tags=jquery" rel="tag" title="Показать вопросы о jquery">jquery</a>-->
+                    <a class="more-tags" href="/tags">больше&nbsp;меток</a>
+                </div>
+                <div class="grid--cell ml16 fl-shrink0">
+                    <div class=" grid s-btn-group js-filter-btn">
+                        <a class="grid--cell s-btn s-btn__muted s-btn__outlined" href="?tab=interesting">Интересные</a>
+                        <a class="grid--cell s-btn s-btn__muted s-btn__outlined" href="?tab=bounties">
+                            <span class="bounty-indicator-tab">7</span>Конкурсные</a>
+                        <a class="grid--cell s-btn s-btn__muted s-btn__outlined" href="?tab=hot">Популярные</a>
+                        <a class="grid--cell s-btn s-btn__muted s-btn__outlined" href="?tab=week">За неделю</a>
+                        <a class="grid--cell s-btn s-btn__muted s-btn__outlined" href="?tab=month">За месяц</a>
+                    </div>
+                </div>
+            </div>
+            <div class="flush-left" id="qlist-wrapper">
+                <div id="question-mini-list">
+                    <div>
+                        {% for post in posts_content %}
+                        <div class="question-summary narrow">
+                            <div class="cp">
+                                <div class="votes">
+                                    <div class="mini-counts">
+                                        <span title="">{{ post.post_rating }}</span>
+                                    </div>
+                                    <div>rating</div>
+                                </div>
+                                {% if post.post.comments.count %}
+                                <div class="status answered">
+                                {% else %}
+                                <div class="status unanswered">
+                                {% endif %}
+                                    <div class="mini-counts">
+                                        <span title="">{{ post.post.comments.count }}</span>
+                                    </div>
+                                    <div>comments</div>
+                                </div>
+                                <div class="views">
+                                    <div class="mini-counts">
+                                        <span title="">{{ post.post.shows.count }}</span>
+                                    </div>
+                                    <div>shows</div>
+                                </div>
+                            </div>
+                            <div class="summary">
+                                <h3>
+                                    <a class="question-hyperlink" href="{% url 'detail' post.post.pk %}">{{ post.post.title }}</a>
+                                </h3>
+                                <div class="tags">
+                                    {% for tag in post.post.tags.all %}
+                                    <a class="post-tag" href="">{{ tag }}</a>
+                                    {% endfor %}
+                                </div>
+                                <div class="started">
+                                    <a class="started-link" href="">задан <span class="relativetime">{{ post.post.create_at }}</span></a>
+                                    <a href="">kostyaMosin</a> <span class="reputation-score"
+                                                                   dir="ltr"
+                                                                   title="уровень репутации 23,899">23.9k</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="show-votes" id="sidebar">
+            <div class="module sidebar-related">
+                <h4 id="h-related">Популярные</h4>
+                <div class="related js-gps-related-questions" data-tracker="rq=1">
+                    {% for post in posts_popular %}
+                    <div class="spacer">
+<!--                        <a href="/q/126892" title="Затемнение родительского окна (wpf)">-->
+<!--                            <div class="answer-votes answered-accepted default">3</div>-->
+<!--                        </a>-->
+<!--                        <a href="/q/944704" title="C# WPF Фокусирование окна">-->
+<!--                            <div class="answer-votes default">0</div>-->
+<!--                        </a>-->
+                        <a class="question-hyperlink" href="">{{ post.title }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="module" id="recent-tags">
+                <h4 id="h-recent-tags">Метки</h4>
+                <div id="recent-tags-list">
+                    {% for tag in tags %}
+                    <a class="post-tag" href="" rel="tag" title="">{{ tag.title }}</a>&nbsp;<span class="item-multiplier"><span
+                        class="item-multiplier-x">&times;</span>&nbsp;<span
+                        class="item-multiplier-count">{{ tag.posts.count }}</span> </span><br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

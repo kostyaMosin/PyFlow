@@ -1,45 +1,36 @@
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, Count, F
 from django.shortcuts import render, redirect
 
 from pyflow.forms import CommentForm, PostForm
-from pyflow.models import Post, Comment, CommentLike, PostLike, Tag
+from pyflow.models import Post, Comment, CommentLike, PostLike, Tag, PostShow
 from pyflow.tags_creator import tags_creator
 
 
 def view_main(request):
-    posts_content = []
     posts = Post.objects.filter()
     tags = Tag.objects.filter()
-    for post in posts.order_by('-create_at'):
-        rating = post.likes.aggregate(Sum('value'))['value__sum']
-        post_rating = rating if rating else 0
-        posts_content.append({
-            'post': post,
-            'post_rating': post_rating,
-        })
-    return render(request, 'index.html', {'posts_content': posts_content,
-                                          'posts_popular': posts.order_by('-shows')[:5],
-                                          'tags': tags,
-                                          'tags_popular': tags.order_by('title')})
+    return render(request, 'index.html', {
+        'posts': posts.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
+        'posts_popular': posts.annotate(shows_count=Count(F('shows'))).order_by('-shows_count')[:5],
+        'tags': tags,
+        'tags_popular': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
+    })
 
 
 def view_detail(request, pk):
     if request.method == 'GET':
         post = Post.objects.get(id=pk)
-        comments = []
-        for comment in post.comments.all():
-            comments.append({
-                'comment': comment,
-                'comment_rating': comment.likes.aggregate(Sum('value'))['value__sum'],
-            })
+        comments = Comment.objects.filter(post=post)
         rating = post.likes.aggregate(Sum('value'))['value__sum']
         context = {
             'post': post,
             'post_rating': rating if rating else 0,
-            'comments': comments,
+            'comments': comments.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
             'form': CommentForm(),
-            'post_by_tags': Post.objects.filter(Q(tags=post.tags.first())),
+            'post_by_tags': Post.objects.exclude(id=post.pk).filter(
+                Q(tags=post.tags.all()[0]) | Q(tags=post.tags.all()[1])),
         }
+        PostShow.objects.create(post=post)
         return render(request, 'detail.html', context)
     if request.method == 'POST':
         post = Post.objects.get(id=pk)
@@ -94,33 +85,31 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
         return redirect('detail', post_pk)
 
 
-def view_edit_post(request, pk):
+def view_edit_delete_post(request, pk):
     if request.method == 'GET':
         post = Post.objects.get(id=pk)
         context = {
             'form': PostForm,
             'post': post,
-            'tags': f"#{'#'.join([tag.title for tag in post.tags.all()])}",
+            'tags': f"#{' #'.join([tag.title for tag in post.tags.all()])}",
         }
-        return render(request, 'edit_post.html', context)
+        return render(request, 'edit.html', context)
     if request.method == 'POST':
-        form = PostForm(request.POST)
-        post = Post.objects.get(id=pk)
-        if form.is_valid():
-            cd = form.cleaned_data
-            post.title = cd['title']
-            post.content = cd['content']
-            post.content_code = cd['content_code']
-            post.tags.set(tags_creator(cd['tags']))
-            post.save()
-            return redirect('detail', post.pk)
-
-
-def view_delete_post(request, pk):
-    if request.method == 'POST':
-        post = Post.objects.get(id=pk)
-        post.delete()
-        return redirect('index')
+        if request.POST['button'] == 'Удалить пост':
+            post = Post.objects.get(id=pk)
+            post.delete()
+            return redirect('index')
+        if request.POST['button'] == 'Сохранить пост':
+            form = PostForm(request.POST)
+            post = Post.objects.get(id=pk)
+            if form.is_valid():
+                cd = form.cleaned_data
+                post.title = cd['title']
+                post.content = cd['content']
+                post.content_code = cd['content_code']
+                post.tags.set(tags_creator(cd['tags']))
+                post.save()
+                return redirect('detail', post.pk)
 
 
 def view_delete_comment(request, pk):
@@ -129,3 +118,15 @@ def view_delete_comment(request, pk):
         post_pk = comment.post.pk
         comment.delete()
         return redirect('detail', post_pk)
+
+
+def view_sort_by_tag(request, pk):
+    tag = Tag.objects.get(id=pk)
+    posts = Post.objects.filter(tags=tag)
+    tags = Tag.objects.filter()
+    return render(request, 'index.html', {
+        'posts': posts.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
+        'posts_popular': posts.annotate(shows_count=Count(F('shows'))).order_by('-shows_count')[:5],
+        'tags': tags,
+        'tags_popular': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
+    })

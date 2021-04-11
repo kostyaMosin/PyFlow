@@ -1,145 +1,157 @@
-<!DOCTYPE html>
-<html class="html__responsive html__unpinned-leftnav">
-    <head>
-        <title>Задать вопрос - Stack Overflow на русском</title>
-        <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Shared/stacks.css?v=3f23ce49e8df">
-        <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Sites/ru/primary.css?v=584b4d9fe4d9">
-        <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Sites/ru/secondary.css?v=35a018e77364">
-        <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Shared/Channels/channels.css?v=a4fa343ab089">
-        <link href="style.css" rel="stylesheet" type="text/css" />
-    </head>
-    <body class="ask-page unified-theme js-ask-page-v2 floating-content">
-        <header class="top-bar _fixed">
-            <div class="wmx12 mx-auto grid ai-center h100">
-                <div class="-main grid--cell">
-                    <a href="" class="-logo -img">PyFlow</a>
-                </div>
-                <form id="search" method="" action="" class="grid--cell fl-grow1 searchbar px12">
-                    <div class="ps-relative">
-                        <input name="q" type="text" placeholder="Search..." class="s-input s-input__search">
-                        <svg aria-hidden="true" class="s-input-icon s-input-icon__search svg-icon iconSearch" width="18"  height="18" viewBox="0 0 18 18"><path d="M18 16.5l-5.14-5.18h-.35a7 7 0 10-1.19 1.19v.35L16.5    18l1.5-1.5zM12 7A5 5 0 112 7a5 5 0 0110 0z"></path></svg>  
-                    </div>    
-                </form>   
+{% extends 'base.html' %}
+
+{% block title %} Create Post {% endblock%}
+
+{% block body %}
+<body class="ask-page unified-theme js-ask-page-v2 floating-content">
+{% endblock%}
+
+{% block content %}
+<div class="container">
+    <div class="pt0 snippet-hidden" id="content">
+        <div class="grid ai-center py24 bg-no-repeat bg-right-bottom wide:bg-image-ask-v2 wide:h-ask-v2-background">
+            <div class="fs-headline1">
+                Edit public post
             </div>
-        </header>
-        <div class="container">
-            <div id="content" class="pt0 snippet-hidden">
-                <div class="grid ai-center py24 bg-no-repeat bg-right-bottom wide:bg-image-ask-v2 wide:h-ask-v2-background">
-                    <div class="fs-headline1">
-                        Edit public post
-                    </div>
-                </div>
-                <div class="grid ai-start jc-space-between md:fd-column md:ai-stretch">
-    <div class="grid--cell fl1 wmn0">
-        <form id="post-form" class="post-form js-post-form" action="/questions/ask/submit" method="post">
-            <input type="hidden" name="qualityBanWarningShown" value="False" />
-            <input type="hidden" name="priorAttemptCount" class="js-post-prior-attempt-count" value="0" /> 
-            <input type="hidden" name="onboardingTemplate" value="" />
-            <input type="hidden" name="warntags" class="js-warned-tags-field" />
-            <div id="question-form">
-                <div class="bg-white bar-sm bs-md p16 ba bc-black-100">
-                    <div id="post-title" class="ps-relative mb16">
-                        <div class="grid fl1 fd-column js-stacks-validation">
-                            <label class="d-block s-label mb4" for="title">
-                                Заголовок
-                                <div class="grid">
-                                    <p class="s-description mt2 grid--cell9">Будьте конкретны. Представьте, что вы задаёте вопрос другому человеку.</p>
-                                    <div class="grid--cell3 ta-right text-counter mr0 fs-caption mt2 fl1"></div>
-                                </div>
-                            </label>
-                            <div class="fl1 ps-relative">
-                                <input id="title" name="title" type="text" maxlength="300" tabindex="100" placeholder="В чём заключается ваш вопрос? Будьте конкретны." class="s-input js-post-title-field" value="" data-min-length="15" data-max-length="150">
-                                <svg aria-hidden="true" class="s-input-icon js-invalid-alert d-none svg-icon iconAlertCircle" width="18" height="18" viewBox="0 0 18 18"><path d="M9 17A8 8 0 119 1a8 8 0 010 16zM8 4v6h2V4H8zm0 8v2h2v-2H8z"/></svg>
-                            </div>
-                            <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
-                        </div>
-                        <div id="question-suggestions" class="js-question-suggestions"></div>
-                    </div>
-                    <div id="post-editor" class="post-editor js-post-editor mt0 mb16">
-                        <div class="ps-relative">
-                            <label class="s-label mb4 d-block" for="wmd-input">
-                                Основная часть
-                                <p class="s-description mt2">Добавьте всю информацию, которая может понадобиться для ответа на ваш вопрос</p>
-                            </label>
-                            <div class="wmd-container mb8">
-                                <div class="js-stacks-validation">
-                                    <div class="ps-relative">
-                                        <textarea id="wmd-input" name="post-text" class="wmd-input s-input bar0 js-post-body-field" data-post-type-id="1" cols="92" rows="15" tabindex="101" data-min-length=""></textarea>
-                                    </div>
-                                    <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ps-relative">
-                            <label class="s-label mb4 d-block" for="wmd-input">
-                                Код
-                                <p class="s-description mt2">Добавьте блок кода, который может понадобиться для ответа на ваш вопрос</p>
-                            </label>
-                            <div class="wmd-container mb8">
-                                <div class="js-stacks-validation">
-                                    <div class="ps-relative">
-                                        <textarea id="wmd-input" name="post-text" class="wmd-input s-input bar0 js-post-body-field" data-post-type-id="1" cols="92" rows="15" tabindex="101" data-min-length=""></textarea>
-                                    </div>
-                                    <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- <div class="grid pb12 fc-light fs-caption gs8">
-                            <div class="grid--cell">
-                                ``` <code class="ba bc-black-800 px4 py2 bar-sm bg-black-050 fc-black-800 ff-mono">код</code> ```
-                            </div>
-                            <div class="grid--cell fw-bold">
-                                **полужирный**
-                            </div>
-                            <div class="grid--cell fs-italic">
-                                *курсив*
-                            </div>
-                            <div class="grid--cell">
-                                >цитата
-                            </div>
-                        </div> -->
-                        <div>
-                            <div id="draft-saved" class="fc-success h24" style="display:none;">Черновик сохранён</div>
-                            <div id="draft-discarded" class="fc-error h24" style="display:none;">Черновик удалён</div>
-                        </div>
-                        <div id="wmd-preview" class="s-prose mb16 wmd-preview js-wmd-preview"></div>
-                        <div></div>
-                    </div>
-                    <div class="ps-relative" id="tag-editor">
-                        <div class="ps-relative">
-                            <div class="form-item p0 js-stacks-validation js-tag-editor-container">
-                                <div class="grid ai-center jc-space-between">
-                                    <label for="tagnames" class="s-label mb4 d-block grid--cell fl1">
-                                        Метки
-                                        <div class="s-description mt2">Добавьте не более 5 меток, описывающих, о чём ваш вопрос</div>
+        </div>
+        <div class="grid ai-start jc-space-between md:fd-column md:ai-stretch">
+            <div class="grid--cell fl1 wmn0">
+                <form action="{% url 'edit-delete-post' post.pk %}" class="post-form js-post-form" id="post-form" method="post">
+                    {% csrf_token %}
+                    <input name="qualityBanWarningShown" type="hidden" value="False"/>
+                    <input class="js-post-prior-attempt-count" name="priorAttemptCount" type="hidden" value="0"/>
+                    <input name="onboardingTemplate" type="hidden" value=""/>
+                    <input class="js-warned-tags-field" name="warntags" type="hidden"/>
+                    <div id="question-form">
+                        <div class="bg-white bar-sm bs-md p16 ba bc-black-100">
+                            <div class="ps-relative mb16" id="post-title">
+                                <div class="grid fl1 fd-column js-stacks-validation">
+                                    <label class="d-block s-label mb4" for="title">
+                                        Заголовок
+                                        <div class="grid">
+                                            <p class="s-description mt2 grid--cell9">Будьте конкретны. Представьте, что
+                                                вы задаёте вопрос другому человеку.</p>
+                                            <div class="grid--cell3 ta-right text-counter mr0 fs-caption mt2 fl1"></div>
+                                        </div>
                                     </label>
+                                    <div class="fl1 ps-relative">
+                                        <input class="s-input js-post-title-field" data-max-length="150" data-min-length="15" id="title" maxlength="300"
+                                               name="title"
+                                               placeholder="В чём заключается ваш вопрос? Будьте конкретны." tabindex="100" type="text"
+                                               value="{{ post.title }}">
+                                        <svg aria-hidden="true"
+                                             class="s-input-icon js-invalid-alert d-none svg-icon iconAlertCircle"
+                                             height="18" viewBox="0 0 18 18" width="18">
+                                            <path d="M9 17A8 8 0 119 1a8 8 0 010 16zM8 4v6h2V4H8zm0 8v2h2v-2H8z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
                                 </div>
+                                <div class="js-question-suggestions" id="question-suggestions"></div>
+                            </div>
+                            <div class="post-editor js-post-editor mt0 mb16" id="post-editor">
                                 <div class="ps-relative">
-                                    <div class="grid fw-wrap">
-                                        <div class="grid--cell fl1">
-                                            <input id="tagnames" class="s-input box-border js-post-tags-field" name="tagnames" type="text" size="60" value="" tabindex="103" placeholder="например, #python #django">
+                                    <label class="s-label mb4 d-block" for="wmd-input">
+                                        Основная часть
+                                        <p class="s-description mt2">Добавьте всю информацию, которая может понадобиться
+                                            для ответа на ваш вопрос</p>
+                                    </label>
+                                    <div class="wmd-container mb8">
+                                        <div class="js-stacks-validation">
+                                            <div class="ps-relative">
+                                                <textarea class="wmd-input s-input bar0 js-post-body-field" cols="92"
+                                                          data-min-length=""
+                                                          data-post-type-id="1" id="wmd-input" name="content" rows="15"
+                                                          tabindex="101">{{ post.content }}</textarea>
+                                            </div>
+                                            <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
+                                <div class="ps-relative">
+                                    <label class="s-label mb4 d-block" for="wmd-input">
+                                        Код
+                                        <p class="s-description mt2">Добавьте блок кода, который может понадобиться для
+                                            ответа на ваш вопрос</p>
+                                    </label>
+                                    <div class="wmd-container mb8">
+                                        <div class="js-stacks-validation">
+                                            <div class="ps-relative">
+                                                <textarea class="wmd-input s-input bar0 js-post-body-field" cols="92"
+                                                          data-min-length=""
+                                                          data-post-type-id="1" id="wmd-input" name="content_code" rows="15"
+                                                          tabindex="101">{{ post.content_code }}</textarea>
+                                            </div>
+                                            <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="grid pb12 fc-light fs-caption gs8">
+                                    <div class="grid--cell">
+                                        ``` <code class="ba bc-black-800 px4 py2 bar-sm bg-black-050 fc-black-800 ff-mono">код</code> ```
+                                    </div>
+                                    <div class="grid--cell fw-bold">
+                                        **полужирный**
+                                    </div>
+                                    <div class="grid--cell fs-italic">
+                                        *курсив*
+                                    </div>
+                                    <div class="grid--cell">
+                                        >цитата
+                                    </div>
+                                </div> -->
+                                <div>
+                                    <div class="fc-success h24" id="draft-saved" style="display:none;">Черновик
+                                        сохранён
+                                    </div>
+                                    <div class="fc-error h24" id="draft-discarded" style="display:none;">Черновик
+                                        удалён
+                                    </div>
+                                </div>
+                                <div class="s-prose mb16 wmd-preview js-wmd-preview" id="wmd-preview"></div>
+                                <div></div>
+                            </div>
+                            <div class="ps-relative" id="tag-editor">
+                                <div class="ps-relative">
+                                    <div class="form-item p0 js-stacks-validation js-tag-editor-container">
+                                        <div class="grid ai-center jc-space-between">
+                                            <label class="s-label mb4 d-block grid--cell fl1" for="tagnames">
+                                                Метки
+                                                <div class="s-description mt2">Добавьте не более 5 меток, описывающих, о
+                                                    чём ваш вопрос
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="ps-relative">
+                                            <div class="grid fw-wrap">
+                                                <div class="grid--cell fl1">
+                                                    <input class="s-input box-border js-post-tags-field" id="tagnames"
+                                                           name="tags" placeholder="например, #python #django" size="60" tabindex="103" type="text"
+                                                           value="{{ tags }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="s-input-message mt4 d-none js-stacks-validation-message"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="js-visible-before-review">
-                <div class="grid gsx gs4 ai-center mt32">
-                    <button class="grid--cell s-btn s-btn__primary s-btn__icon ws-nowrap js-begin-review-button js-gps-track" type="button" tabindex="120"
-                            data-gps-track="askpage.review_click">
-                        Сохранить пост
-                    </button>
-                    <button class="grid--cell s-btn s-btn__danger ws-nowrap discard-question">Удалить пост</button>
-                </div>
-            </div>
-        </form>
-    </div>
-                </div>
+                    <div class="js-visible-before-review">
+                        <div class="grid gsx gs4 ai-center mt32">
+                            <input class="grid--cell s-btn s-btn__primary s-btn__icon ws-nowrap js-begin-review-button js-gps-track"
+                                    data-gps-track="askpage.review_click" tabindex="120"
+                                    type="submit" name="button" value="Сохранить пост">
+                            <input class="grid--cell s-btn s-btn__danger ws-nowrap discard-question"
+                                    data-gps-track="askpage.review_click" tabindex="120"
+                                    type="submit" name="button" value="Удалить пост">
+<!--                            <button class="grid&#45;&#45;cell s-btn s-btn__danger ws-nowrap discard-question">Удалить пост-->
+<!--                            </button>-->
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-    </body>
-</html>
+    </div>
+</div>
+{% endblock %}

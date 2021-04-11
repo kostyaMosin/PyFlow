@@ -19,7 +19,7 @@
             <div class="grid ai-end mb16 sm:fd-column">
                 <div class="grid--cell fl1 fs-body1 sm:mb16">
                     {% for tag in tags_popular %}
-                    <a class="post-tag no-tag-menu" href="/?tags=javascript" rel="tag"
+                    <a class="post-tag no-tag-menu" href="{% url 'post-by-tag' tag.pk %}" rel="tag"
                        title="Показать вопросы о javascript">{{ tag.title }}</a>
                     {% endfor %}
 <!--                    <a class="post-tag no-tag-menu" href="/?tags=php" rel="tag" title="Показать вопросы о php">php</a>-->
@@ -34,7 +34,7 @@
 <!--                       title="Показать вопросы о c++">c++</a>-->
 <!--                    <a class="post-tag no-tag-menu" href="/?tags=css" rel="tag" title="Показать вопросы о css">css</a>-->
 <!--                    <a class="post-tag no-tag-menu" href="/?tags=jquery" rel="tag" title="Показать вопросы о jquery">jquery</a>-->
-                    <a class="more-tags" href="/tags">больше&nbsp;меток</a>
+<!--                    <a class="more-tags" href="/tags">больше&nbsp;меток</a>-->
                 </div>
                 <div class="grid--cell ml16 fl-shrink0">
                     <div class=" grid s-btn-group js-filter-btn">
@@ -50,43 +50,47 @@
             <div class="flush-left" id="qlist-wrapper">
                 <div id="question-mini-list">
                     <div>
-                        {% for post in posts_content %}
+                        {% for post in posts %}
                         <div class="question-summary narrow">
                             <div class="cp">
                                 <div class="votes">
                                     <div class="mini-counts">
-                                        <span title="">{{ post.post_rating }}</span>
+                                        {% if post.rating %}
+                                        <span title="">{{ post.rating }}</span>
+                                        {% else %}
+                                        <span title="">0</span>
+                                        {% endif %}
                                     </div>
                                     <div>rating</div>
                                 </div>
-                                {% if post.post.comments.count %}
+                                {% if post.comments.count %}
                                 <div class="status answered">
                                 {% else %}
                                 <div class="status unanswered">
                                 {% endif %}
                                     <div class="mini-counts">
-                                        <span title="">{{ post.post.comments.count }}</span>
+                                        <span title="">{{ post.comments.count }}</span>
                                     </div>
                                     <div>comments</div>
                                 </div>
                                 <div class="views">
                                     <div class="mini-counts">
-                                        <span title="">{{ post.post.shows.count }}</span>
+                                        <span title="">{{ post.shows.count }}</span>
                                     </div>
                                     <div>shows</div>
                                 </div>
                             </div>
                             <div class="summary">
                                 <h3>
-                                    <a class="question-hyperlink" href="{% url 'detail' post.post.pk %}">{{ post.post.title }}</a>
+                                    <a class="question-hyperlink" href="{% url 'detail' post.pk %}">{{ post.title }}</a>
                                 </h3>
                                 <div class="tags">
-                                    {% for tag in post.post.tags.all %}
+                                    {% for tag in post.tags.all %}
                                     <a class="post-tag" href="">{{ tag }}</a>
                                     {% endfor %}
                                 </div>
                                 <div class="started">
-                                    <a class="started-link" href="">задан <span class="relativetime">{{ post.post.create_at }}</span></a>
+                                    <a class="started-link" href="">задан <span class="relativetime">{{ post.create_at }}</span></a>
                                     <a href="">kostyaMosin</a> <span class="reputation-score"
                                                                    dir="ltr"
                                                                    title="уровень репутации 23,899">23.9k</span>
@@ -110,7 +114,7 @@
 <!--                        <a href="/q/944704" title="C# WPF Фокусирование окна">-->
 <!--                            <div class="answer-votes default">0</div>-->
 <!--                        </a>-->
-                        <a class="question-hyperlink" href="">{{ post.title }}</a>
+                        <a class="question-hyperlink" href="{% url 'detail' post.pk %}">{{ post.title }}</a>
                     </div>
                     {% endfor %}
                 </div>

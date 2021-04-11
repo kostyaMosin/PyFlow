@@ -1,10 +1,14 @@
+from django.core.mail import send_mail
 from django.db.models import Sum, Q, Count, F
 from django.shortcuts import render, redirect
 from datetime import datetime as dt, timedelta
 
-from pyflow.forms import CommentForm, PostForm
+from django.template import loader
+
+from pyflow.forms import CommentForm, PostForm, SendEmailForm
 from pyflow.models import Post, Comment, CommentLike, PostLike, Tag, PostShow
 from pyflow.tags_creator import tags_creator
+from src import settings
 
 
 def view_main(request):
@@ -147,3 +151,28 @@ def view_delete_comment(request, pk):
         post_pk = comment.post.pk
         comment.delete()
         return redirect('detail', post_pk)
+
+
+def view_send_post(request, pk):
+    if request.method == 'GET':
+        context = {
+            'send_form': SendEmailForm(),
+            'post': Post.objects.get(id=pk)
+        }
+        return render(request, 'send_post.html', context)
+    else:
+        form = SendEmailForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            html_message = loader.render_to_string(
+                'email.html', {'post': Post.objects.get(id=pk)},
+            )
+            send_mail(
+                subject=cd['topic'],
+                message='',
+                html_message=html_message,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[cd['receiver']],
+                fail_silently=False,
+            )
+    return redirect('detail', pk)

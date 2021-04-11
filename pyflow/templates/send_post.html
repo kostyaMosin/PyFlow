@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %} Send mail {% endblock %}
+
+{% block content %}
+
+<p>{{ post.title }}</p>
+
+<form action="{% url 'send-post' post.pk %}" method="post">
+    {% csrf_token %}
+    {{ send_form.as_p }}
+    <input type="submit" value="Send">
+</form>
+
+{% endblock %}

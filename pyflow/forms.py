@@ -10,3 +10,8 @@ class PostForm(forms.Form):
 
 class CommentForm(forms.Form):
     comment = forms.CharField(widget=forms.Textarea)
+
+
+class SendEmailForm(forms.Form):
+    receiver = forms.EmailField()
+    topic = forms.CharField()

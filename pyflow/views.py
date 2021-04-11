@@ -1,5 +1,6 @@
 from django.db.models import Sum, Q, Count, F
 from django.shortcuts import render, redirect
+from datetime import datetime as dt, timedelta
 
 from pyflow.forms import CommentForm, PostForm
 from pyflow.models import Post, Comment, CommentLike, PostLike, Tag, PostShow
@@ -12,9 +13,37 @@ def view_main(request):
     return render(request, 'index.html', {
         'posts': posts.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
         'posts_popular': posts.annotate(shows_count=Count(F('shows'))).order_by('-shows_count')[:5],
-        'tags': tags,
-        'tags_popular': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
+        'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
     })
+
+
+def view_sort_by_tag(request, pk):
+    tag = Tag.objects.get(id=pk)
+    posts = Post.objects.filter(tags=tag)
+    tags = Tag.objects.filter()
+    return render(request, 'sort_posts_by_tag.html', {
+        'posts': posts.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
+        'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
+    })
+
+
+def view_sort_by_date(request):
+    if request.method == 'GET':
+        button = request.GET['button']
+        posts = Post.objects.filter()
+        time = dt.now()
+        if button == 'week':
+            time = dt.now() - timedelta(days=7)
+        if button == 'month':
+            time = dt.now() - timedelta(days=30)
+        posts_sorted = posts.filter(create_at__gt=time).annotate(rating=Sum(F('likes__value'))).order_by('-create_at')
+        if button == 'top':
+            posts_sorted = posts.annotate(rating=Sum(F('likes__value'))).order_by('-rating')
+        tags = Tag.objects.filter()
+        return render(request, 'sort_posts_by_date.html', {
+            'posts': posts_sorted,
+            'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts'),
+        })
 
 
 def view_detail(request, pk):
@@ -118,15 +147,3 @@ def view_delete_comment(request, pk):
         post_pk = comment.post.pk
         comment.delete()
         return redirect('detail', post_pk)
-
-
-def view_sort_by_tag(request, pk):
-    tag = Tag.objects.get(id=pk)
-    posts = Post.objects.filter(tags=tag)
-    tags = Tag.objects.filter()
-    return render(request, 'index.html', {
-        'posts': posts.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
-        'posts_popular': posts.annotate(shows_count=Count(F('shows'))).order_by('-shows_count')[:5],
-        'tags': tags,
-        'tags_popular': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
-    })

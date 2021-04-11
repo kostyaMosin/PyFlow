@@ -23,10 +23,6 @@
                     <span class="fc-light mr2">Post created</span>
                     <time datetime="2018-09-17T10:31:52" itemprop="dateCreated"> {{ post.create_at }}</time>
                 </div>
-                <!--                    <div class="grid&#45;&#45;cell ws-nowrap mr16 mb8">-->
-                <!--                        <span class="fc-light mr2">last activity</span>-->
-                <!--                        <a href="?lastactivity" class="s-link s-link__inherit" title="2021-04-06 04:09:00Z">сегодня</a>-->
-                <!--                    </div>-->
                 <div class="grid--cell ws-nowrap mb8" title="Просмотрен 373 раза">
                     <span class="fc-light mr2"> Viewed </span>
                     {{ post.shows.count }} times
@@ -155,8 +151,9 @@
                                     {% endfor %}
                                 </ul>
                             </div>
+                            {% if user.is_authenticated %}
                             <div data-reg=true data-rep=50>
-                                <a class="comments-link disabled-link" href="#" role="button" title="">Add Comment</a>
+                                <p class="comments-link disabled-link" href="#" role="button" title="">Add Comment</p>
                                 <span class="js-link-separator dno">|</span>
                             </div>
                             <div>
@@ -166,6 +163,7 @@
                                     <input class="ws-nowrap s-btn s-btn__primary" type="submit" value="Add comment">
                                 </form>
                             </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

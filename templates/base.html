@@ -25,16 +25,20 @@
               </div>
               </form>
               <ol class="overflow-x-auto ml-auto -secondary grid ai-center list-reset h100 user-logged-out" role="presentation">
-                <li class="-item">
-                  <a href="/users/437271/kostya-mosin" class="my-profile js-gps-track" data-gps-track="profile_summary.click()">
-                    <div class="gravatar-wrapper-24" title="Kostya Mosin"><img src="https://www.gravatar.com/avatar/cb2b422f3ebccc025911a9e80beeae82?s=48&amp;d=identicon&amp;r=PG&amp;f=1" alt="" width="24" height="24" class="bar-sm -avatar js-avatar-me"></div><span class="v-visible-sr">Kostya Mosin</span>
-                    <div class="-rep js-header-rep" title="ваша репутация: 1" aria-hidden="true">1</div>
-                </a>
-            </li>
+                {% if user.is_authenticated %}
+                  <li class="-item">
+                    <a href="" class="my-profile" data-gps-track="profile_summary.click()">{{ user.username }}
+                        <div class="-rep js-header-rep" title="ваша репутация: 1" aria-hidden="true">1</div></a>
+                  </li>
+                  <li class="-ctas">
+                    <a href="{% url 'logout' %}" class="login-link s-btn s-btn__filled py8 js-gps-track">Выход</a>
+                  </li>
+                  {% else %}
                 <li class="-ctas">
-                  <a href="" class="login-link s-btn s-btn__filled py8 js-gps-track">Войти</a>
-                  <a href="" class="login-link s-btn s-btn__primary py8">Регистрация</a>
+                  <a href="{% url 'login' %}" class="login-link s-btn s-btn__filled py8 js-gps-track">Войти</a>
+                  <a href="{% url 'signup' %}" class="login-link s-btn s-btn__primary py8">Регистрация</a>
                 </li>
+                  {% endif %}
               </ol>
           </div>
       </header>

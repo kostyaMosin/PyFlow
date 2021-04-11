@@ -61,10 +61,8 @@
                                     {% endfor %}
                                 </div>
                                 <div class="started">
-                                    <a class="started-link" href="">задан <span class="relativetime">{{ post.create_at }}</span></a>
-                                    <a href="">kostyaMosin</a> <span class="reputation-score"
-                                                                   dir="ltr"
-                                                                   title="уровень репутации 23,899">23.9k</span>
+                                    <a class="started-link" href="{% url 'detail' post.pk %}">задан <span class="relativetime">{{ post.create_at }}</span></a>
+                                    <a href="">kostyaMosin</a>
                                 </div>
                             </div>
                         </div>
@@ -74,9 +72,9 @@
             </div>
         </div>
         <div class="show-votes" id="sidebar">
-            <div class="module" id="recent-tags">
-                <h4 id="h-recent-tags">Метки</h4>
-                <div id="recent-tags-list">
+            <div class="module">
+                <h4>Метки</h4>
+                <div>
                     {% for tag in tags %}
                     <a class="post-tag" href="{% url 'post-by-tag' tag.pk %}" rel="tag" title="">{{ tag.title }}</a>&nbsp;<span class="item-multiplier"><span
                         class="item-multiplier-x">&times;</span>&nbsp;<span

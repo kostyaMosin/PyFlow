@@ -18,7 +18,7 @@
             </div>
             <div class="grid ai-end mb16 sm:fd-column">
                 <div class="grid--cell ml16 fl-shrink0">
-                    <div class=" grid s-btn-group js-filter-btn">
+                    <div class=" grid s-btn-group">
                         <form method="get" action="{% url 'post-by-date' %}">
                             <button class="grid--cell s-btn s-btn__muted s-btn__outlined" name="button" value="top">Топ</button>
                             <button class="grid--cell s-btn s-btn__muted s-btn__outlined" name="button" value="week">За неделю</button>
@@ -71,9 +71,7 @@
                                 </div>
                                 <div class="started">
                                     <a class="started-link" href="">задан <span class="relativetime">{{ post.create_at }}</span></a>
-                                    <a href="">kostyaMosin</a> <span class="reputation-score"
-                                                                   dir="ltr"
-                                                                   title="уровень репутации 23,899">23.9k</span>
+                                    <a href="">kostyaMosin</a>
                                 </div>
                             </div>
                         </div>
@@ -84,8 +82,8 @@
         </div>
         <div class="show-votes" id="sidebar">
             <div class="module sidebar-related">
-                <h4 id="h-related">Популярные</h4>
-                <div class="related js-gps-related-questions" data-tracker="rq=1">
+                <h4>Популярные</h4>
+                <div class="related">
                     {% for post in posts_popular %}
                     <div class="spacer">
                         <a class="question-hyperlink" href="{% url 'detail' post.pk %}">{{ post.title }}</a>
@@ -93,11 +91,11 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="module" id="recent-tags">
-                <h4 id="h-recent-tags">Метки</h4>
-                <div id="recent-tags-list">
+            <div class="module">
+                <h4>Метки</h4>
+                <div>
                     {% for tag in tags %}
-                    <a class="post-tag" href="{% url 'post-by-tag' tag.pk %}" rel="tag" title="">{{ tag.title }}</a>&nbsp;<span class="item-multiplier"><span
+                    <a class="post-tag" href="{% url 'post-by-tag' tag.pk %}" title="">{{ tag.title }}</a>&nbsp;<span class="item-multiplier"><span
                         class="item-multiplier-x">&times;</span>&nbsp;<span
                         class="item-multiplier-count">{{ tag.posts.count }}</span> </span><br>
                     {% endfor %}

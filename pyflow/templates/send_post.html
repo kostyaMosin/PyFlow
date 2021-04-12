@@ -1,15 +1,41 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %} Send mail {% endblock %}
+{% block title %} Send post by mail {% endblock%}
+
+{% block body %}
+<body class="universal-auth-page unified-theme floating-content">
+{% endblock%}
 
 {% block content %}
-
-<p>{{ post.title }}</p>
-
-<form action="{% url 'send-post' post.pk %}" method="post">
-    {% csrf_token %}
-    {{ send_form.as_p }}
-    <input type="submit" value="Send">
-</form>
-
+    <div id="content" class="grid grid__center snippet-hidden">
+        <div>
+            <div class="grid--cell">
+                <div class="ta-center fs-title mx-auto mb24">
+                    Поделиться постом:<br>
+                    {{ post.title }}
+                </div>
+                <div class="mx-auto mb24 p24 wmx3 bg-white bar-lg auth-shadow mb24" id="formContainer">
+                    <form class="grid fd-column gs12 gsy" method="post" action="{% url 'send-post' post.pk %}">{% csrf_token %}
+                        <div class="grid fd-column gs4 gsy">
+                            <label class="grid--cell s-label">Получатель</label>
+                            <div class="grid ps-relative">
+                                <input class="grid--cell s-input" id="id_receiver" type="email" name="receiver">
+                            </div>
+                        </div>
+                        <div class="grid fd-column-reverse gs4 gsy">
+                            <div class="grid ps-relative">
+                                <input class="grid--cell s-input" type="text" name="topic" id="id_topic">
+                            </div>
+                            <div class="grid ai-center ps-relative jc-space-between">
+                                <label class="grid--cell s-label">Тема</label>
+                            </div>
+                        </div>
+                        <div class="grid gs4 gsy fd-column">
+                            <input class="grid--cell s-btn s-btn__primary" type="submit" value="Отправить">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

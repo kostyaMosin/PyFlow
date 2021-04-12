@@ -107,20 +107,29 @@
                                     <li class="comment">
                                         <div class="comment-actions">
                                             <div class="comment-score">
-                                                <form method="post" action="{% url 'rating' obj_type='comment' pk=comment.pk %}">{% csrf_token %}
+                                                <form method="post" action="{% url 'rating' obj_type='comment' pk=comment.pk %}">
+                                                    {% csrf_token %}
+                                                    {% if user.is_authenticated %}
+                                                        {% if comment not in comment_add_or_like_by_user %}
                                                     <button class="grid--cell s-btn s-btn__unset c-pointer" value="like" name="button">
                                                         <svg aria-hidden="true" class="m0 svg-icon iconArrowUpLg"
                                                              width="12" height="12" viewBox="0 0 36 36"><path d="M2 26h32L18 10 2 26z"/></svg>
                                                     </button>
+                                                        {% endif %}
+                                                    {% endif %}
                                                     {% if comment.rating %}
                                                     <div class="grid--cell fc-black-500 fs-title-small grid fd-column ai-center">{{ comment.rating }}</div>
                                                     {% else %}
                                                     <div class="grid--cell fc-black-500 fs-title-small grid fd-column ai-center"></div>
                                                     {% endif %}
+                                                    {% if user.is_authenticated %}
+                                                        {% if comment not in comment_add_or_like_by_user %}
                                                     <button class="grid--cell s-btn s-btn__unset c-pointer" value="dislike" name="button">
                                                         <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg"
                                                              width="12" height="12" viewBox="0 0 36 36"><path d="M2 10h32L18 26 2 10z"/></svg>
                                                     </button>
+                                                        {% endif %}
+                                                    {% endif %}
                                                 </form>
                                             </div>
                                         </div>

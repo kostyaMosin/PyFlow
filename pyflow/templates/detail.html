@@ -93,22 +93,10 @@
                                     </div>
                                     <div class="post-signature owner grid--cell">
                                         <div class="user-info ">
-                                            <div class="user-action-time">задан <span class="relativetime"
-                                                                                      title="2018-09-17 10:31:52Z">17 сен '18 в 10:31</span>
+                                            <div class="user-action-time">Create at <span class="relativetime">{{ post.create_at }}</span>
                                             </div>
-                                            <div class="user-gravatar32">
-                                                <a href="/users/303574/good-irbis">
-                                                    <div class="gravatar-wrapper-32"><img alt="" class="bar-sm" height="32"
-                                                                                          src="" width="32">
-                                                    </div>
-                                                </a>
-                                            </div>
-                                            <div class="user-details" itemprop="author" itemscope itemtype="">
-                                                <a href="/users/303574/good-irbis">Good Irbis</a><span class="d-none"
-                                                                                                       itemprop="name">Good Irbis</span>
-                                                <div class="-flair">
-                                                    <span class="reputation-score" dir="ltr" title="уровень репутации ">55</span>
-                                                </div>
+                                            <div class="user-details">
+                                                <a href="">{{ post.user.username }}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -116,30 +104,23 @@
                             </div>
                         </div>
                         <div class="post-layout--right">
-                            <div class="comments js-comments-container bt bc-black-075 mt12 ">
-                                <ul class="comments-list js-comments-list">
+                            <div class="comments bt bc-black-075 mt12 ">
+                                <ul class="comments-list">
                                     {% for comment in comments %}
-                                    <li class="comment js-comment " data-comment-id="1435614"
-                                        data-comment-owner-id="218063" data-comment-score="0">
-                                        <div class="js-comment-actions comment-actions">
-                                            <div class="comment-score js-comment-edit-hide">
+                                    <li class="comment">
+                                        <div class="comment-actions">
+                                            <div class="comment-score">
                                                 <form method="post" action="{% url 'rating' obj_type='comment' pk=comment.pk %}">{% csrf_token %}
-                                                    <button class="js-vote-up-btn grid--cell s-btn s-btn__unset c-pointer"
-                                                            data-controller="s-tooltip" data-s-tooltip-placement="right"
-                                                            title="" aria-pressed="false" aria-label="Up vote"
-                                                            data-selected-classes="fc-theme-primary" value="like" name="button">
+                                                    <button class="grid--cell s-btn s-btn__unset c-pointer" value="like" name="button">
                                                         <svg aria-hidden="true" class="m0 svg-icon iconArrowUpLg"
                                                              width="12" height="12" viewBox="0 0 36 36"><path d="M2 26h32L18 10 2 26z"/></svg>
                                                     </button>
                                                     {% if comment.rating %}
-                                                    <div class="grid--cell fc-black-500 fs-title-small grid fd-column ai-center" itemprop="upvoteCount" data-value="2">{{ comment.rating }}</div>
+                                                    <div class="grid--cell fc-black-500 fs-title-small grid fd-column ai-center">{{ comment.rating }}</div>
                                                     {% else %}
-                                                    <div class="grid--cell fc-black-500 fs-title-small grid fd-column ai-center" itemprop="upvoteCount" data-value="2"></div>
+                                                    <div class="grid--cell fc-black-500 fs-title-small grid fd-column ai-center"></div>
                                                     {% endif %}
-                                                    <button class="grid--cell s-btn s-btn__unset c-pointer"
-                                                            data-controller="s-tooltip" data-s-tooltip-placement="right"
-                                                            title="" aria-pressed="false" aria-label="Down vote"
-                                                            data-selected-classes="fc-theme-primary" value="dislike" name="button">
+                                                    <button class="grid--cell s-btn s-btn__unset c-pointer" value="dislike" name="button">
                                                         <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg"
                                                              width="12" height="12" viewBox="0 0 36 36"><path d="M2 10h32L18 26 2 10z"/></svg>
                                                     </button>
@@ -149,10 +130,8 @@
                                         <div class="comment-text  js-comment-text-and-form">
                                             <div class="comment-body js-comment-edit-hide">
                                                 <span class="comment-copy">{{ comment.comment }}</span> - <a
-                                                    class="comment-user" href="" title="">kostyaMosin</a>
-                                                <span class="comment-date" dir="ltr"><span
-                                                        class="relativetime-clean"
-                                                        title="2018-09-17 10:35:54Z, Лицензия: CC BY-SA 4.0">{{ comment.create_at }}</span></span>
+                                                    class="comment-user" href="" title="">{{ comment.user }}</a>
+                                                <span class="comment-date" dir="ltr"><span class="relativetime-clean">{{ comment.create_at }}</span></span>
                                             </div>
                                         </div>
                                     </li>
@@ -161,8 +140,8 @@
                             </div>
                             {% if user.is_authenticated %}
                             <div data-reg=true data-rep=50>
-                                <p class="comments-link disabled-link" href="#" role="button" title="">Add Comment</p>
-                                <span class="js-link-separator dno">|</span>
+                                <p class="comments-link disabled-link">Add Comment</p>
+                                <span class="dno">|</span>
                             </div>
                             <div>
                                 <form action="{% url 'detail' post.pk %}" class="grid--cell fl-grow1 px12"
@@ -176,10 +155,10 @@
                     </div>
                 </div>
             </div>
-            <div aria-label="" class="show-votes" id="sidebar" role="complementary">
+            <div class="show-votes" id="sidebar">
                 <div class="module sidebar-related">
                     <h4 id="h-related">Похожие</h4>
-                    <div class="related js-gps-related-questions" data-tracker="rq=1">
+                    <div class="related">
                         {% for post in post_by_tags %}
                         <div class="spacer">
                             <!--                                <a href="/q/126892" title="Затемнение родительского окна (wpf)">-->

@@ -55,6 +55,12 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name='comments',
     )
+    user = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='comments',
+    )
 
     def __str__(self):
         return f'{self.pk} comment for post: {self.post}'

@@ -69,10 +69,11 @@ def view_detail(request, pk):
     if request.method == 'POST':
         post = Post.objects.get(id=pk)
         form = CommentForm(request.POST)
+        user = request.user
         if form.is_valid():
             cd = form.cleaned_data
             comment = cd['comment']
-            Comment.objects.create(comment=comment, post=post)
+            Comment.objects.create(comment=comment, post=post, user=user)
             return redirect('detail', post.pk)
 
 

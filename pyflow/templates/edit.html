@@ -1,88 +1,30 @@
-{% extends 'base.html' %}
+{% extends 'create_edit_post.html' %}
 
-{% block title %} Create Post {% endblock%}
+{% block block_title %} Create Post {% endblock %}
 
-{% block body %}
-<body class="ask-page unified-theme floating-content">
-{% endblock%}
-
-{% block content %}
-    <div class="pt0 snippet-hidden" id="content">
-        <div class="grid ai-center py24 bg-no-repeat bg-right-bottom">
+{% block headline %}
             <div class="fs-headline1">
                 Edit public post
             </div>
-        </div>
-        <div class="grid ai-start jc-space-between">
-            <div class="grid--cell fl1 wmn0">
+{% endblock %}
+        
+{% block form_action %}
                 <form action="{% url 'edit-delete-post' post.pk %}" class="post-form" id="post-form" method="post">
-                    {% csrf_token %}
-                    <div id="question-form">
-                        <div class="bg-white bar-sm bs-md p16 ba bc-black-100">
-                            <div class="ps-relative mb16" id="post-title">
-                                <div class="grid fl1 fd-column">
-                                    <label class="d-block s-label mb4" for="title">
-                                        Заголовок
-                                        <div class="grid">
-                                            <p class="s-description mt2 grid--cell9">Будьте конкретны. Представьте, что
-                                                вы задаёте вопрос другому человеку.</p>
-                                        </div>
-                                    </label>
-                                    <div class="fl1 ps-relative">
-                                        <input class="s-input" id="title" name="title" type="text" value="{{ post.title }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="post-editor">
-                                <div class="ps-relative">
-                                    <label class="s-label mb4 d-block">
-                                        Основная часть
-                                        <p class="s-description mt2">Добавьте всю информацию, которая может понадобиться
-                                            для ответа на ваш вопрос</p>
-                                    </label>
-                                    <div class="wmd-container mb8">
-                                        <div class="ps-relative">
-                                            <textarea class="wmd-input s-input bar0" name="content">{{ post.content }}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="ps-relative">
-                                    <label class="s-label mb4 d-block">
-                                        Код
-                                        <p class="s-description mt2">Добавьте блок кода, который может понадобиться для
-                                            ответа на ваш вопрос</p>
-                                    </label>
-                                    <div class="wmd-container mb8">
-                                        <div class="ps-relative">
-                                            <textarea class="wmd-input s-input bar0" name="content_code">{{ post.content_code }}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ps-relative">
-                                <div class="ps-relative">
-                                    <div class="form-item p0">
-                                        <div class="grid ai-center jc-space-between">
-                                            <label class="s-label mb4 d-block grid--cell fl1">
-                                                Метки
-                                                <div class="s-description mt2">Добавьте не более 5 меток, описывающих, о
-                                                    чём ваш вопрос
-                                                </div>
-                                            </label>
-                                        </div>
-                                        <div class="ps-relative">
-                                            <div class="grid fw-wrap">
-                                                <div class="grid--cell fl1">
-                                                    <input class="s-input box-border" name="tags" type="text" value="{{ tags }}">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="js-visible-before-review">
+{% endblock %}                    
+
+{% block input_title %}                                        
+                    <input class="s-input" id="title" name="title" type="text" value="{{ post.title }}">
+{% endblock %}                                    
+                                    
+{% block content_text %}{{ post.content }}{% endblock %}
+                                            
+{% block content_code_text %}{{ post.content_code }}{% endblock %}
+
+{% block input_tags %}                                                    
+                    <input class="s-input box-border" name="tags" type="text" value="{{ tags }}">
+{% endblock %}                                                 
+                                                
+{% block button %}                        
                         <div class="grid gsx gs4 ai-center mt32">
                             <button class="grid--cell s-btn s-btn__primary s-btn__icon ws-nowrap"
                                     type="submit" name="button" value="save">Сохранить пост</button>
@@ -93,9 +35,4 @@
                             {% endif %}
                             {% endif %}
                         </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 {% endblock %}

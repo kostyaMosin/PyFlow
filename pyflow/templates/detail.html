@@ -15,7 +15,11 @@
                                                                                              href="">{{ post.title }}</a>
                 </h1>
                 <div class="ml12 aside-cta grid--cell print:d-none sm:ml0 sm:mb12 sm:order-first sm:as-end">
-                    <a class="ws-nowrap s-btn s-btn__primary" href="{% url 'create-post' %}"> Create Post </a>
+                    {% if user.is_authenticated %}
+                    <a class="ws-nowrap s-btn s-btn__primary" href="{% url 'create-post' %}">Create Post</a>
+                    {% else %}
+                    <a class="ws-nowrap s-btn s-btn__primary" href="{% url 'login' %}">Create Post</a>
+                    {% endif %}
                 </div>
             </div>
             <div class="grid fw-wrap pb8 mb16 bb bc-black-075">
@@ -77,8 +81,12 @@
                                         <div class="pt2" data-post-id="882233">
                                             <div class="grid d-flex gs8 s-anchors s-anchors__muted fw-wrap">
                                                 <div class="grid--cell">
-                                                    <a class="js-share-link js-gps-track" href="{% url 'send-post' post.pk %}" title="">Share</a>
-                                                    <a class="js-share-link js-gps-track" href="{% url 'edit-delete-post' post.pk %}" title="">Edit</a>
+                                                    {% if user.is_authenticated %}
+                                                    <a href="{% url 'send-post' post.pk %}" title="">Share</a>
+                                                    {% if user == post.user %}
+                                                    <a href="{% url 'edit-delete-post' post.pk %}" title="">Edit</a>
+                                                    {% endif %}
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>

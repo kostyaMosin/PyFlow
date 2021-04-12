@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from django.core.mail import send_mail
 from django.db.models import Sum, Q, Count, F
 from django.shortcuts import render, redirect
@@ -77,18 +78,23 @@ def view_detail(request, pk):
 
 def view_create_post(request):
     if request.method == 'GET':
-        context = {
-            'form': PostForm(),
-        }
-        return render(request, 'create.html', context)
+        if isinstance(request.user, AnonymousUser):
+            return redirect('login')
+        else:
+            context = {
+                'form': PostForm(),
+            }
+            return render(request, 'create.html', context)
     if request.method == 'POST':
         form = PostForm(request.POST)
+        user = request.user
         if form.is_valid():
             cd = form.cleaned_data
             data = {
                 'title': cd['title'],
                 'content': cd['content'],
                 'content_code': cd['content_code'],
+                'user': user,
             }
             post = Post.objects.create(**data)
             post.tags.set(tags_creator(cd['tags']))
@@ -120,19 +126,22 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
 
 def view_edit_delete_post(request, pk):
     if request.method == 'GET':
-        post = Post.objects.get(id=pk)
-        context = {
-            'form': PostForm,
-            'post': post,
-            'tags': f"#{' #'.join([tag.title for tag in post.tags.all()])}",
-        }
-        return render(request, 'edit.html', context)
+        if isinstance(request.user, AnonymousUser):
+            return redirect('login')
+        else:
+            post = Post.objects.get(id=pk)
+            context = {
+                'form': PostForm,
+                'post': post,
+                'tags': f"#{' #'.join([tag.title for tag in post.tags.all()])}",
+            }
+            return render(request, 'edit.html', context)
     if request.method == 'POST':
-        if request.POST['button'] == 'Удалить пост':
+        if request.POST['button'] == 'save':
             post = Post.objects.get(id=pk)
             post.delete()
             return redirect('index')
-        if request.POST['button'] == 'Сохранить пост':
+        if request.POST['button'] == 'delete':
             form = PostForm(request.POST)
             post = Post.objects.get(id=pk)
             if form.is_valid():

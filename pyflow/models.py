@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Post(models.Model):
@@ -7,6 +8,12 @@ class Post(models.Model):
     content_code = models.TextField(blank=True)
     tags = models.ManyToManyField('Tag', related_name='posts')
     create_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='posts'
+    )
 
     def __str__(self):
         return f'{self.pk} {self.title}'

@@ -7,7 +7,6 @@
 {% endblock%}
 
 {% block content %}
-<div class="container">
     <div id="content">
         <div id="mainbar">
             <div class="grid">
@@ -21,6 +20,9 @@
                 </div>
             </div>
             <div class="grid ai-end mb16 sm:fd-column">
+                
+                {% block topbar %}{% endblock %}
+            
             </div>
             <div class="flush-left" id="qlist-wrapper">
                 <div id="question-mini-list">
@@ -61,12 +63,12 @@
                                 </h3>
                                 <div class="tags">
                                     {% for tag in post.tags.all %}
-                                    <a class="post-tag" href="">{{ tag }}</a>
+                                    <a class="post-tag" href="{% url 'post-by-tag' tag.pk %}">{{ tag }}</a>
                                     {% endfor %}
                                 </div>
                                 <div class="started">
                                     <a class="started-link" href="{% url 'detail' post.pk %}">задан <span class="relativetime">{{ post.create_at }}</span></a>
-                                    <a href="">kostyaMosin</a>
+                                    <a href="">{{ post.user.username }}</a>
                                 </div>
                             </div>
                         </div>
@@ -76,11 +78,14 @@
             </div>
         </div>
         <div class="show-votes" id="sidebar">
+
+            {% block related_posts %}{% endblock %}          
+
             <div class="module">
                 <h4>Метки</h4>
                 <div>
                     {% for tag in tags %}
-                    <a class="post-tag" href="{% url 'post-by-tag' tag.pk %}" rel="tag" title="">{{ tag.title }}</a>&nbsp;<span class="item-multiplier"><span
+                    <a class="post-tag" href="{% url 'post-by-tag' tag.pk %}">{{ tag.title }}</a>&nbsp;<span class="item-multiplier"><span
                         class="item-multiplier-x">&times;</span>&nbsp;<span
                         class="item-multiplier-count">{{ tag.posts.count }}</span> </span><br>
                     {% endfor %}
@@ -88,6 +93,5 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 {% endblock %}

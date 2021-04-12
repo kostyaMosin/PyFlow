@@ -26,7 +26,7 @@ def view_sort_by_tag(request, pk):
     tag = Tag.objects.get(id=pk)
     posts = Post.objects.filter(tags=tag)
     tags = Tag.objects.filter()
-    return render(request, 'sort_posts_by_tag.html', {
+    return render(request, 'posts_content.html', {
         'posts': posts.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
         'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
     })
@@ -45,7 +45,7 @@ def view_sort_by_date(request):
         if button == 'top':
             posts_sorted = posts.annotate(rating=Sum(F('likes__value'))).order_by('-rating')
         tags = Tag.objects.filter()
-        return render(request, 'sort_posts_by_date.html', {
+        return render(request, 'posts_content.html', {
             'posts': posts_sorted,
             'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts'),
         })

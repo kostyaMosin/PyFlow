@@ -7,12 +7,11 @@
 {% endblock%}
 
 {% block content %}
-<div class="container">
     <div id="content">
         <div class="inner-content clearfix">
             <div class="grid sm:fd-column" id="question-header">
-                <h1 class="fs-headline1 ow-break-word mb8 grid--cell fl1" itemprop="name"><a class="question-hyperlink"
-                                                                                             href="">{{ post.title }}</a>
+                <h1 class="fs-headline1 ow-break-word mb8 grid--cell fl1" itemprop="name">
+                    <a class="question-hyperlink" href="">{{ post.title }}</a>
                 </h1>
                 <div class="ml12 aside-cta grid--cell print:d-none sm:ml0 sm:mb12 sm:order-first sm:as-end">
                     {% if user.is_authenticated %}
@@ -178,5 +177,4 @@
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

@@ -38,26 +38,23 @@
                         <div class="votecell post-layout--left">
                             <div class=" grid jc-center fd-column ai-stretch gs4 fc-black-200" data-post-id="882233">
                                 <form method="post" action="{% url 'rating' obj_type='post' pk=post.pk %}">{% csrf_token %}
-                                    <button aria-label="Up vote"
-                                            aria-pressed="false" class="js-vote-up-btn grid--cell s-btn s-btn__unset c-pointer" data-controller="s-tooltip"
-                                            data-s-tooltip-placement="right" data-selected-classes="fc-theme-primary"
-                                            title="" value="like" name="button">
+                                    {% if user.is_authenticated %}
+                                        {% if not liked_post_by_user %}
+                                    <button class="grid--cell s-btn s-btn__unset c-pointer" value="like" name="button">
                                         <svg aria-hidden="true" class="m0 svg-icon iconArrowUpLg" height="36" viewBox="0 0 36 36"
-                                             width="36">
-                                            <path d="M2 26h32L18 10 2 26z"/>
-                                        </svg>
+                                             width="36"><path d="M2 26h32L18 10 2 26z"/></svg>
                                     </button>
-                                    <div class="grid--cell fc-black-500 fs-title grid fd-column ai-center"
-                                         data-value="2" itemprop="upvoteCount">{{ post_rating }}
-                                    </div>
-                                    <button aria-label="Down vote" aria-pressed="false"
-                                            class="grid--cell s-btn s-btn__unset c-pointer" data-controller="s-tooltip" data-s-tooltip-placement="right"
-                                            data-selected-classes="fc-theme-primary" title="" value="dislike" name="button">
+                                        {% endif %}
+                                    {% endif %}
+                                    <div class="grid--cell fc-black-500 fs-title grid fd-column ai-center">{{ post_rating }}</div>
+                                    {% if user.is_authenticated %}
+                                        {% if not liked_post_by_user %}
+                                    <button class="grid--cell s-btn s-btn__unset c-pointer" value="dislike" name="button">
                                         <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" height="36" viewBox="0 0 36 36"
-                                             width="36">
-                                            <path d="M2 10h32L18 26 2 10z"/>
-                                        </svg>
+                                             width="36"><path d="M2 10h32L18 26 2 10z"/></svg>
                                     </button>
+                                        {% endif %}
+                                    {% endif %}
                                 </form>
                             </div>
                         </div>

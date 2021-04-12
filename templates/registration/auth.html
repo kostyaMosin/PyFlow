@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %} {% block block_title %}{% endblock%} {% endblock%}
+
+{% block body %}
+<body class="universal-auth-page unified-theme floating-content">
+{% endblock%}
+
+{% block content %}
+    <div id="content" class="grid grid__center snippet-hidden">
+        <div>
+            <div class="grid--cell">
+                <div class="ta-center fs-title mx-auto mb24">
+
+                    {% block center %}{% endblock %}
+                
+                </div>
+                <div class="mx-auto mb24 p24 wmx3 bg-white bar-lg auth-shadow mb24" id="formContainer">
+                    <form class="grid fd-column gs12 gsy" method="post">{% csrf_token %}
+                        <div class="grid fd-column gs4 gsy">
+                            <label class="grid--cell s-label">{% block label_name %}{% endblock %}</label>
+                            <div class="grid ps-relative">
+                                <input class="grid--cell s-input" id="id_username" name="username" type="text">
+                            </div>
+                        </div>
+                        {% block password %}{% endblock %}
+                        <div class="grid gs4 gsy fd-column">
+                            <button class="grid--cell s-btn s-btn__primary" id="submit-button" name="submit-button" type="submit">
+                                {% block button %}{% endblock %}
+                            </button>
+                        </div>
+                    
+                    </form>
+                </div>
+                <div class="mx-auto ta-center fs-body1 p16 pb0 mb24 w100 wmx3">
+                    {% block bottom_link %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

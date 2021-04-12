@@ -9,20 +9,12 @@
 {% block content %}
     <div class="pt0 snippet-hidden" id="content">
         <div class="grid ai-center py24 bg-no-repeat bg-right-bottom">
-            
-
-        {% block headline %}{% endblock%}
-        
-
+            {% block headline %}{% endblock%}
         </div>
         <div class="grid ai-start jc-space-between">
             <div class="grid--cell fl1 wmn0">
-                
-
                 {% block form_action %}{% endblock%}
-                    
-
-                    {% csrf_token %}
+                {% csrf_token %}
                     <div id="question-form">
                         <div class="bg-white bar-sm bs-md p16 ba bc-black-100">
                             <div class="ps-relative mb16" id="post-title">
@@ -34,13 +26,7 @@
                                                 вы задаёте вопрос другому человеку.</p>
                                         </div>
                                     </label>
-                                    <div class="fl1 ps-relative">
-                                        
-
-                                        {% block input_title %}{% endblock%}
-                                    
-
-                                    </div>
+                                    <div class="fl1 ps-relative">{% block input_title %}{% endblock%}</div>
                                 </div>
                             </div>
                             <div class="post-editor mt0 mb16">
@@ -52,10 +38,7 @@
                                     </label>
                                     <div class="wmd-container mb8">
                                         <div class="ps-relative">
-                                            <textarea class="wmd-input s-input bar0" name="content">
-                                                
-                                            {% block content_text %}{% endblock %}
-
+                                            <textarea class="wmd-input s-input bar0" name="content">{% block content_text %}{% endblock %}
                                             </textarea>
                                         </div>
                                     </div>
@@ -68,11 +51,7 @@
                                     </label>
                                     <div class="wmd-container mb8">
                                         <div class="ps-relative">
-                                            <textarea class="wmd-input s-input bar0" name="content_code">
-                                                
-                                        {% block content_code_text %}{% endblock %}
-
-                                            </textarea>
+                                            <textarea class="wmd-input s-input bar0" name="content_code">{% block content_code_text %}{% endblock %}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -91,11 +70,7 @@
                                         <div class="ps-relative">
                                             <div class="grid fw-wrap">
                                                 <div class="grid--cell fl1">
-                                                    
-
-                                            {% block input_tags %}{% endblock %} 
-                                                
-
+                                                    {% block input_tags %}{% endblock %} 
                                                 </div>
                                             </div>
                                         </div>
@@ -104,11 +79,7 @@
                             </div>
                         </div>
                     </div>
-                    
-
                     {% block button %}{% endblock %}
-                
-
                 </form>
             </div>
         </div>

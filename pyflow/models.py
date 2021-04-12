@@ -47,6 +47,12 @@ class PostShow(models.Model):
         related_name='shows'
     )
     create_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='post_shows',
+    )
 
     def __str__(self):
         return f'{self.post} show: {self.create_at}'

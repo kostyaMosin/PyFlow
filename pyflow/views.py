@@ -67,7 +67,8 @@ def view_detail(request, pk):
         if not isinstance(request.user, AnonymousUser):
             user = request.user
             context['liked_post_by_user'] = bool(post.likes.filter(user=user))
-        PostShow.objects.create(post=post)
+            if not bool(post.shows.filter(user=user)):
+                PostShow.objects.create(post=post, user=user)
         return render(request, 'detail.html', context)
     if request.method == 'POST':
         post = Post.objects.get(id=pk)

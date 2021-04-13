@@ -4,13 +4,15 @@ from django.db.models import QuerySet
 import pytz
 from datetime import datetime as dt, timedelta
 
-from pyflow.models import Post, Tag, PostLike, PostShow
+from pyflow.forms import CommentForm
+from pyflow.models import Post, Tag, PostLike, PostShow, Comment, CommentLike
 
 
 class ViewTestCase(TestCase):
     def setUp(self):
         self.user_1 = User.objects.create_user(username='user1')
         self.user_2 = User.objects.create_user(username='user2')
+        self.user_3 = User.objects.create_user(username='user3')
         self.tag_1 = Tag.objects.create(title='tag 1')
         self.tag_2 = Tag.objects.create(title='tag 2')
         self.post_1 = Post.objects.create(
@@ -30,6 +32,9 @@ class ViewTestCase(TestCase):
         self.post_1_show_1 = PostShow.objects.create(post=self.post_1, user=self.user_1)
         self.post_1_show_2 = PostShow.objects.create(post=self.post_1, user=self.user_2)
         self.post_2_show_1 = PostShow.objects.create(post=self.post_2, user=self.user_1)
+        self.comment_1 = Comment.objects.create(comment='comment 1', post=self.post_1, user=self.user_1)
+        self.comment_2 = Comment.objects.create(comment='comment 2', post=self.post_1, user=self.user_2)
+        self.comment_1_like_1 = CommentLike.objects.create(value=1, comment=self.comment_1, user=self.user_2)
 
     def test_view_main(self):
         response = self.client.get('/')
@@ -166,19 +171,6 @@ class ViewTestCase(TestCase):
         self.assertEqual(post_1.rating, 2)
         self.assertEqual(post_2.rating, -2)
         self.assertEqual(list(posts), [self.post_2, self.post_1])
-        tags = response.context['tags']
-        self.assertIsInstance(tags, QuerySet)
-        self.assertIn(self.tag_1, tags)
-        self.assertIn(self.tag_2, tags)
-        tag_1 = tags.get(id=self.tag_1.pk)
-        tag_2 = tags.get(id=self.tag_2.pk)
-        self.assertIsInstance(tag_1, Tag)
-        self.assertIsInstance(tag_2, Tag)
-        self.assertEqual(tag_1, self.tag_1)
-        self.assertEqual(tag_2, self.tag_2)
-        self.assertEqual(tag_1.posts.count(), 2)
-        self.assertEqual(tag_2.posts.count(), 1)
-        self.assertEqual(list(tags), [self.tag_1, self.tag_2])
 
     def test_view_sort_by_date_top(self):
         response = self.client.get('/post/date/', {'button': 'top'})
@@ -198,16 +190,50 @@ class ViewTestCase(TestCase):
         self.assertEqual(post_1.rating, 2)
         self.assertEqual(post_2.rating, -2)
         self.assertEqual(list(posts), [self.post_1, self.post_2])
-        tags = response.context['tags']
-        self.assertIsInstance(tags, QuerySet)
-        self.assertIn(self.tag_1, tags)
-        self.assertIn(self.tag_2, tags)
-        tag_1 = tags.get(id=self.tag_1.pk)
-        tag_2 = tags.get(id=self.tag_2.pk)
-        self.assertIsInstance(tag_1, Tag)
-        self.assertIsInstance(tag_2, Tag)
-        self.assertEqual(tag_1, self.tag_1)
-        self.assertEqual(tag_2, self.tag_2)
-        self.assertEqual(tag_1.posts.count(), 2)
-        self.assertEqual(tag_2.posts.count(), 1)
-        self.assertEqual(list(tags), [self.tag_1, self.tag_2])
+
+    def test_view_detail_get(self):
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'detail.html')
+        self.assertIn('post', response.context)
+        post_1 = response.context['post']
+        self.assertIsInstance(post_1, Post)
+        self.assertEqual(post_1, self.post_1)
+        self.assertEqual(post_1.title, self.post_1.title)
+        self.assertEqual(post_1.content, self.post_1.content)
+        self.assertEqual(post_1.content_code, self.post_1.content_code)
+        self.assertEqual(post_1.tags, self.post_1.tags)
+        self.assertEqual(post_1.create_at, self.post_1.create_at)
+        self.assertEqual(post_1.user, self.post_1.user)
+        self.assertEqual(post_1.likes, self.post_1.likes)
+        self.assertEqual(post_1.comments, self.post_1.comments)
+        self.assertEqual(post_1.shows, self.post_1.shows)
+        self.assertEqual(post_1.shows.count(), 2)
+        self.assertIn('post_rating', response.context)
+        post_rating = response.context['post_rating']
+        self.assertEqual(post_rating, 2)
+        self.assertIn('comments', response.context)
+        comments = response.context['comments']
+        self.assertIsInstance(comments, QuerySet)
+        comment_1 = comments.get(id=self.comment_1.pk)
+        comment_2 = comments.get(id=self.comment_2.pk)
+        self.assertEqual(comment_1.comment, self.comment_1.comment)
+        self.assertEqual(comment_1.user, self.comment_1.user)
+        self.assertEqual(comment_1.create_at, self.comment_1.create_at)
+        self.assertEqual(comment_2.comment, self.comment_2.comment)
+        self.assertEqual(comment_2.user, self.comment_2.user)
+        self.assertEqual(comment_2.create_at, self.comment_2.create_at)
+        self.assertEqual(comment_1.rating, 1)
+        self.assertEqual(comment_2.rating, None)
+        self.assertEqual(list(comments), [self.comment_2, self.comment_1])
+        self.assertIn('form', response.context)
+        self.assertIsInstance(response.context['form'], CommentForm)
+        self.assertIn('posts_by_tags', response.context)
+        posts_by_tags = response.context['posts_by_tags']
+        self.assertIsInstance(posts_by_tags, QuerySet)
+        self.assertIn(self.post_2, posts_by_tags)
+        self.assertNotIn(self.post_1, posts_by_tags)
+        post_2 = posts_by_tags.get(id=self.post_2.pk)
+        self.assertEqual(post_2.title, self.post_2.title)
+        self.assertIn('liked_post_by_user', response.context)
+        self.assertEqual(response.context['liked_post_by_user'], False)

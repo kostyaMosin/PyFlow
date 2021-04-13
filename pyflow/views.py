@@ -60,21 +60,24 @@ def view_detail(request, pk):
         post = Post.objects.get(id=pk)
         comments = post.comments
         rating = post.likes.aggregate(Sum('value'))['value__sum']
-        post_by_tags = Post.objects.exclude(id=post.pk).filter()
+        posts = Post.objects.exclude(id=post.pk).filter()
         for tag in post.tags.all():
-            if posts := post_by_tags.filter(tags=tag):
-                post_by_tags = posts
-            break
+            if posts_sort := posts.filter(tags=tag):
+                posts = posts_sort
+            else:
+                break
         context = {
             'post': post,
             'post_rating': rating if rating else 0,
             'comments': comments.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
             'form': CommentForm(),
-            'post_by_tags': post_by_tags,
+            'posts_by_tags': posts,
+            'liked_post_by_user': False,
         }
         if not isinstance(request.user, AnonymousUser):
             user = request.user
-            context['liked_post_by_user'] = bool(post.likes.filter(user=user))
+            if post.likes.filter(user=user):
+                context['liked_post_by_user'] = True
             context['comment_add_or_like_by_user'] = list(comments.filter(user=user))
             for comment in comments.all():
                 if comment.likes.filter(user=user):
@@ -90,6 +93,8 @@ def view_detail(request, pk):
             cd = form.cleaned_data
             comment = cd['comment']
             Comment.objects.create(comment=comment, post=post, user=user)
+            return redirect('detail', post.pk)
+        else:
             return redirect('detail', post.pk)
 
 

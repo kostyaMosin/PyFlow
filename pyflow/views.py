@@ -58,7 +58,9 @@ def view_detail(request, pk):
         rating = post.likes.aggregate(Sum('value'))['value__sum']
         post_by_tags = Post.objects.exclude(id=post.pk).filter()
         for tag in post.tags.all():
-            post_by_tags = post_by_tags.filter(tags=tag)
+            if posts := post_by_tags.filter(tags=tag):
+                post_by_tags = posts
+            break
         context = {
             'post': post,
             'post_rating': rating if rating else 0,
@@ -111,6 +113,11 @@ def view_create_post(request):
             post.tags.set(tags_creator(cd['tags']))
             post.save()
             return redirect('detail', post.pk)
+        else:
+            context = {
+                'form': PostForm(),
+            }
+            return render(request, 'create.html', context)
 
 
 def view_add_like_or_dislike_value(request, obj_type, pk):
@@ -147,17 +154,17 @@ def view_edit_delete_post(request, pk):
         else:
             post = Post.objects.get(id=pk)
             context = {
-                'form': PostForm,
+                'form': PostForm(),
                 'post': post,
                 'tags': f"#{' #'.join([tag.title for tag in post.tags.all()])}",
             }
             return render(request, 'edit.html', context)
     if request.method == 'POST':
-        if request.POST['button'] == 'save':
+        if request.POST['button'] == 'delete':
             post = Post.objects.get(id=pk)
             post.delete()
             return redirect('index')
-        if request.POST['button'] == 'delete':
+        if request.POST['button'] == 'save':
             form = PostForm(request.POST)
             post = Post.objects.get(id=pk)
             if form.is_valid():
@@ -168,6 +175,13 @@ def view_edit_delete_post(request, pk):
                 post.tags.set(tags_creator(cd['tags']))
                 post.save()
                 return redirect('detail', post.pk)
+            else:
+                context = {
+                    'form': PostForm(),
+                    'post': Post.objects.get(id=pk),
+                    'tags': f"#{' #'.join([tag.title for tag in post.tags.all()])}"
+                }
+                return render(request, 'edit.html', context)
 
 
 def view_delete_comment(request, pk):

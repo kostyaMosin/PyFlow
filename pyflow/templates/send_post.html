@@ -12,7 +12,7 @@
             <div class="grid--cell">
                 <div class="ta-center fs-title mx-auto mb24">
                     Поделиться постом:<br>
-                    {{ post.title }}
+                    <a class="question-hyperlink" href="{% url 'detail' post.pk %}">{{ post.title }}</a>
                 </div>
                 <div class="mx-auto mb24 p24 wmx3 bg-white bar-lg auth-shadow mb24" id="formContainer">
                     <form class="grid fd-column gs12 gsy" method="post" action="{% url 'send-post' post.pk %}">{% csrf_token %}

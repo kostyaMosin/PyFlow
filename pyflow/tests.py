@@ -12,7 +12,6 @@ class ViewTestCase(TestCase):
     def setUp(self):
         self.user_1 = User.objects.create_user(username='user1')
         self.user_2 = User.objects.create_user(username='user2')
-        self.user_3 = User.objects.create_user(username='user3')
         self.tag_1 = Tag.objects.create(title='tag 1')
         self.tag_2 = Tag.objects.create(title='tag 2')
         self.post_1 = Post.objects.create(

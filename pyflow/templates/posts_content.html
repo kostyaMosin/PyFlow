@@ -10,7 +10,7 @@
     <div id="content">
         <div id="mainbar">
             <div class="grid">
-                <h1 class="grid--cell fl1 fs-headline1">Posts</h1>
+                <h1 class="grid--cell fl1 fs-headline1"><a href="{% url 'index' %}">Posts</a></h1>
                 <div class="ml12 aside-cta grid--cell print:d-none">
                     {% if user.is_authenticated %}
                     <a class="ws-nowrap s-btn s-btn__primary" href="{% url 'create-post' %}">Create Post</a>

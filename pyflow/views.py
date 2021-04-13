@@ -1,8 +1,9 @@
 from django.contrib.auth.models import AnonymousUser
 from django.core.mail import send_mail
-from django.db.models import Sum, Q, Count, F
+from django.db.models import Sum, Count, F
 from django.shortcuts import render, redirect
 from datetime import datetime as dt, timedelta
+import pytz
 
 from django.template import loader
 
@@ -15,40 +16,43 @@ from src import settings
 def view_main(request):
     posts = Post.objects.filter()
     tags = Tag.objects.filter()
-    return render(request, 'index.html', {
+    context = {
         'posts': posts.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
         'posts_popular': posts.annotate(shows_count=Count(F('shows'))).order_by('-shows_count')[:5],
         'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
-    })
+    }
+    return render(request, 'index.html', context)
 
 
 def view_sort_by_tag(request, pk):
     tag = Tag.objects.get(id=pk)
     posts = Post.objects.filter(tags=tag)
     tags = Tag.objects.filter()
-    return render(request, 'posts_content.html', {
+    context = {
         'posts': posts.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
         'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
-    })
+    }
+    return render(request, 'posts_content.html', context)
 
 
 def view_sort_by_date(request):
     if request.method == 'GET':
         button = request.GET['button']
         posts = Post.objects.filter()
-        time = dt.now()
+        time = dt.now(tz=pytz.UTC)
         if button == 'week':
-            time = dt.now() - timedelta(days=7)
+            time = time - timedelta(days=7)
         if button == 'month':
-            time = dt.now() - timedelta(days=30)
+            time = time - timedelta(days=30)
         posts_sorted = posts.filter(create_at__gt=time).annotate(rating=Sum(F('likes__value'))).order_by('-create_at')
         if button == 'top':
             posts_sorted = posts.annotate(rating=Sum(F('likes__value'))).order_by('-rating')
         tags = Tag.objects.filter()
-        return render(request, 'posts_content.html', {
+        context = {
             'posts': posts_sorted,
             'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts'),
-        })
+        }
+        return render(request, 'posts_content.html', context)
 
 
 def view_detail(request, pk):

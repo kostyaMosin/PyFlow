@@ -19,7 +19,7 @@ def view_main(request):
     context = {
         'posts': posts.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
         'posts_popular': posts.annotate(shows_count=Count(F('shows'))).order_by('-shows_count')[:5],
-        'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
+        'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts'),
     }
     return render(request, 'index.html', context)
 
@@ -30,7 +30,7 @@ def view_sort_by_tag(request, pk):
     tags = Tag.objects.filter()
     context = {
         'posts': posts.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
-        'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts')[:10],
+        'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts'),
     }
     return render(request, 'posts_content.html', context)
 
@@ -41,9 +41,9 @@ def view_sort_by_date(request):
         posts = Post.objects.filter()
         time = dt.now(tz=pytz.UTC)
         if button == 'week':
-            time = time - timedelta(days=7)
+            time = time - timedelta(7)
         if button == 'month':
-            time = time - timedelta(days=30)
+            time = time - timedelta(30)
         posts_sorted = posts.filter(create_at__gt=time).annotate(rating=Sum(F('likes__value'))).order_by('-create_at')
         if button == 'top':
             posts_sorted = posts.annotate(rating=Sum(F('likes__value'))).order_by('-rating')

@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.db.models import QuerySet
+import pytz
+from datetime import datetime as dt, timedelta
 
 from pyflow.models import Post, Tag, PostLike, PostShow
 
@@ -62,13 +64,15 @@ class ViewTestCase(TestCase):
         self.assertIsInstance(tags, QuerySet)
         self.assertIn(self.tag_1, tags)
         self.assertIn(self.tag_2, tags)
-        tag_1, tag_2 = tags
+        tag_1 = tags.get(id=self.tag_1.pk)
+        tag_2 = tags.get(id=self.tag_2.pk)
         self.assertIsInstance(tag_1, Tag)
         self.assertIsInstance(tag_2, Tag)
         self.assertEqual(tag_1, self.tag_1)
         self.assertEqual(tag_2, self.tag_2)
         self.assertEqual(tag_1.posts.count(), 2)
         self.assertEqual(tag_2.posts.count(), 1)
+        self.assertEqual(list(tags), [self.tag_1, self.tag_2])
 
     def test_view_sort_by_tag(self):
         post_3 = Post.objects.create(
@@ -99,10 +103,111 @@ class ViewTestCase(TestCase):
         self.assertIsInstance(tags, QuerySet)
         self.assertIn(self.tag_1, tags)
         self.assertIn(self.tag_2, tags)
-        tag_1, tag_2 = tags
+        tag_1 = tags.get(id=self.tag_1.pk)
+        tag_2 = tags.get(id=self.tag_2.pk)
         self.assertIsInstance(tag_1, Tag)
         self.assertIsInstance(tag_2, Tag)
         self.assertEqual(tag_1, self.tag_1)
         self.assertEqual(tag_2, self.tag_2)
         self.assertEqual(tag_1.posts.count(), 2)
         self.assertEqual(tag_2.posts.count(), 2)
+
+    def test_view_sort_by_date_week(self):
+        self.post_1.create_at = dt.now(tz=pytz.UTC) - timedelta(29)
+        self.post_2.create_at = dt.now(tz=pytz.UTC) - timedelta(6)
+        self.post_1.save()
+        self.post_2.save()
+        response = self.client.get('/post/date/', {'button': 'week'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'posts_content.html')
+        self.assertIn('posts', response.context)
+        posts = response.context['posts']
+        self.assertIsInstance(posts, QuerySet)
+        self.assertNotIn(self.post_1, posts)
+        self.assertIn(self.post_2, posts)
+        post_2 = posts.get(id=self.post_2.pk)
+        self.assertIsInstance(post_2, Post)
+        self.assertEqual(post_2, self.post_2)
+        self.assertEqual(post_2.rating, -2)
+        self.assertEqual(list(posts), [self.post_2])
+        tags = response.context['tags']
+        self.assertIsInstance(tags, QuerySet)
+        self.assertIn(self.tag_1, tags)
+        self.assertIn(self.tag_2, tags)
+        tag_1 = tags.get(id=self.tag_1.pk)
+        tag_2 = tags.get(id=self.tag_2.pk)
+        self.assertIsInstance(tag_1, Tag)
+        self.assertIsInstance(tag_2, Tag)
+        self.assertEqual(tag_1, self.tag_1)
+        self.assertEqual(tag_2, self.tag_2)
+        self.assertEqual(tag_1.posts.count(), 2)
+        self.assertEqual(tag_2.posts.count(), 1)
+        self.assertEqual(list(tags), [self.tag_1, self.tag_2])
+
+    def test_view_sort_by_date_month(self):
+        self.post_1.create_at = dt.now(tz=pytz.UTC) - timedelta(29)
+        self.post_2.create_at = dt.now(tz=pytz.UTC) - timedelta(6)
+        self.post_1.save()
+        self.post_2.save()
+        response = self.client.get('/post/date/', {'button': 'month'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'posts_content.html')
+        self.assertIn('posts', response.context)
+        posts = response.context['posts']
+        self.assertIsInstance(posts, QuerySet)
+        self.assertIn(self.post_1, posts)
+        self.assertIn(self.post_2, posts)
+        post_1 = posts.get(id=self.post_1.pk)
+        post_2 = posts.get(id=self.post_2.pk)
+        self.assertIsInstance(post_1, Post)
+        self.assertIsInstance(post_2, Post)
+        self.assertEqual(post_1, self.post_1)
+        self.assertEqual(post_2, self.post_2)
+        self.assertEqual(post_1.rating, 2)
+        self.assertEqual(post_2.rating, -2)
+        self.assertEqual(list(posts), [self.post_2, self.post_1])
+        tags = response.context['tags']
+        self.assertIsInstance(tags, QuerySet)
+        self.assertIn(self.tag_1, tags)
+        self.assertIn(self.tag_2, tags)
+        tag_1 = tags.get(id=self.tag_1.pk)
+        tag_2 = tags.get(id=self.tag_2.pk)
+        self.assertIsInstance(tag_1, Tag)
+        self.assertIsInstance(tag_2, Tag)
+        self.assertEqual(tag_1, self.tag_1)
+        self.assertEqual(tag_2, self.tag_2)
+        self.assertEqual(tag_1.posts.count(), 2)
+        self.assertEqual(tag_2.posts.count(), 1)
+        self.assertEqual(list(tags), [self.tag_1, self.tag_2])
+
+    def test_view_sort_by_date_top(self):
+        response = self.client.get('/post/date/', {'button': 'top'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'posts_content.html')
+        self.assertIn('posts', response.context)
+        posts = response.context['posts']
+        self.assertIsInstance(posts, QuerySet)
+        self.assertIn(self.post_1, posts)
+        self.assertIn(self.post_2, posts)
+        post_1 = posts.get(id=self.post_1.pk)
+        post_2 = posts.get(id=self.post_2.pk)
+        self.assertIsInstance(post_1, Post)
+        self.assertIsInstance(post_2, Post)
+        self.assertEqual(post_1, self.post_1)
+        self.assertEqual(post_2, self.post_2)
+        self.assertEqual(post_1.rating, 2)
+        self.assertEqual(post_2.rating, -2)
+        self.assertEqual(list(posts), [self.post_1, self.post_2])
+        tags = response.context['tags']
+        self.assertIsInstance(tags, QuerySet)
+        self.assertIn(self.tag_1, tags)
+        self.assertIn(self.tag_2, tags)
+        tag_1 = tags.get(id=self.tag_1.pk)
+        tag_2 = tags.get(id=self.tag_2.pk)
+        self.assertIsInstance(tag_1, Tag)
+        self.assertIsInstance(tag_2, Tag)
+        self.assertEqual(tag_1, self.tag_1)
+        self.assertEqual(tag_2, self.tag_2)
+        self.assertEqual(tag_1.posts.count(), 2)
+        self.assertEqual(tag_2.posts.count(), 1)
+        self.assertEqual(list(tags), [self.tag_1, self.tag_2])

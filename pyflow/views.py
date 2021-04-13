@@ -1,4 +1,3 @@
-from django.contrib.auth.models import AnonymousUser
 from django.core.mail import send_mail
 from django.db.models import Sum, Count, F
 from django.shortcuts import render, redirect
@@ -74,7 +73,7 @@ def view_detail(request, pk):
             'posts_by_tags': posts,
             'liked_post_by_user': False,
         }
-        if not isinstance(request.user, AnonymousUser):
+        if request.user.is_authenticated:
             user = request.user
             if post.likes.filter(user=user):
                 context['liked_post_by_user'] = True
@@ -100,7 +99,7 @@ def view_detail(request, pk):
 
 def view_create_post(request):
     if request.method == 'GET':
-        if isinstance(request.user, AnonymousUser):
+        if request.user.is_authenticated:
             return redirect('login')
         else:
             context = {
@@ -133,7 +132,7 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
     if request.method == 'POST':
         post_pk = pk
         user = request.user
-        if isinstance(user, AnonymousUser):
+        if request.user.is_authenticated:
             return redirect('login')
         button = request.POST['button']
         value = 1 if button == 'like' else -1
@@ -158,7 +157,7 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
 
 def view_edit_delete_post(request, pk):
     if request.method == 'GET':
-        if isinstance(request.user, AnonymousUser):
+        if request.user.is_authenticated:
             return redirect('login')
         else:
             post = Post.objects.get(id=pk)

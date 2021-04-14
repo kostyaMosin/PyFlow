@@ -1,10 +1,8 @@
 from django.contrib.auth.models import User
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.db.models import QuerySet
 import pytz
 from datetime import datetime as dt, timedelta
-
-from django.urls import reverse
 
 from pyflow.forms import CommentForm
 from pyflow.models import Post, Tag, PostLike, PostShow, Comment, CommentLike
@@ -248,3 +246,11 @@ class ViewTestCase(TestCase):
         self.assertEqual(comment_1.post, self.comment_1.post)
         self.assertEqual(self.post_1.shows.count(), post_1.shows.count())
         self.assertEqual(post_1.shows.count(), 2)
+
+    def test_detail_view_get_post_without_tags(self):
+        self.post_3 = Post.objects.create(
+            title='title 3', content='content 3', content_code='content code 3', user=self.user_1
+        )
+        response = self.client.get(f'/post/{self.post_3.pk}', {'pk': self.post_3.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('posts_by_tags', response.context)

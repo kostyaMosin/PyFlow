@@ -123,7 +123,6 @@ class ViewTestCase(TestCase):
         self.post_2.save()
         response = self.client.get('/post/date/', {'button': 'week'})
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'posts_content.html')
         self.assertIn('posts', response.context)
         posts = response.context['posts']
         self.assertIsInstance(posts, QuerySet)
@@ -155,7 +154,6 @@ class ViewTestCase(TestCase):
         self.post_2.save()
         response = self.client.get('/post/date/', {'button': 'month'})
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'posts_content.html')
         self.assertIn('posts', response.context)
         posts = response.context['posts']
         self.assertIsInstance(posts, QuerySet)
@@ -174,7 +172,6 @@ class ViewTestCase(TestCase):
     def test_view_sort_by_date_top(self):
         response = self.client.get('/post/date/', {'button': 'top'})
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'posts_content.html')
         self.assertIn('posts', response.context)
         posts = response.context['posts']
         self.assertIsInstance(posts, QuerySet)
@@ -247,7 +244,7 @@ class ViewTestCase(TestCase):
         self.assertEqual(self.post_1.shows.count(), post_1.shows.count())
         self.assertEqual(post_1.shows.count(), 2)
 
-    def test_detail_view_get_post_without_tags(self):
+    def test_detail_view_get_without_tags(self):
         self.post_3 = Post.objects.create(
             title='title 3', content='content 3', content_code='content code 3', user=self.user_1
         )
@@ -256,7 +253,7 @@ class ViewTestCase(TestCase):
         self.assertIn('posts_by_tags', response.context)
         self.assertFalse(response.context['posts_by_tags'])
 
-    def test_detail_view_get_post_with_unique_tag(self):
+    def test_detail_view_get_with_unique_tag(self):
         self.post_3 = Post.objects.create(
             title='title 3', content='content 3', content_code='content code 3', user=self.user_1
         )
@@ -267,3 +264,24 @@ class ViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('posts_by_tags', response.context)
         self.assertFalse(response.context['posts_by_tags'])
+
+    def test_detail_view_get_with_user_is_anonymous(self):
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('liked_post_by_user', response.context)
+        self.assertFalse(response.context['liked_post_by_user'])
+        self.assertNotIn('comment_add_or_comment_like_by_user', response.context)
+        post_1 = response.context['post']
+        self.assertEqual(self.post_1, post_1)
+        self.assertEqual(post_1.shows.count(), self.post_1.shows.count())
+        self.assertEqual(post_1.shows.count(), 2)
+
+    def test_detail_view_get_add_post_show_with_unique_auth_user(self):
+        self.client.force_login(self.user_2)
+        self.assertEqual(self.post_2.shows.count(), 1)
+        response = self.client.get(f'/post/{self.post_2.pk}', {'pk': self.post_2.pk})
+        self.assertEqual(response.status_code, 200)
+        post_2 = response.context['post']
+        self.assertEqual(self.post_2, post_2)
+        self.assertEqual(post_2.shows.count(), self.post_2.shows.count())
+        self.assertEqual(self.post_2.shows.count(), 2)

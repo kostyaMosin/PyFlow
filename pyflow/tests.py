@@ -253,4 +253,17 @@ class ViewTestCase(TestCase):
         )
         response = self.client.get(f'/post/{self.post_3.pk}', {'pk': self.post_3.pk})
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn('posts_by_tags', response.context)
+        self.assertIn('posts_by_tags', response.context)
+        self.assertFalse(response.context['posts_by_tags'])
+
+    def test_detail_view_get_post_with_unique_tag(self):
+        self.post_3 = Post.objects.create(
+            title='title 3', content='content 3', content_code='content code 3', user=self.user_1
+        )
+        self.tag_3 = Tag.objects.create(title='tag 3')
+        self.post_3.tags.add(self.tag_3)
+        self.post_3.save()
+        response = self.client.get(f'/post/{self.post_3.pk}', {'pk': self.post_3.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('posts_by_tags', response.context)
+        self.assertFalse(response.context['posts_by_tags'])

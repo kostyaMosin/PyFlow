@@ -60,20 +60,19 @@ def view_detail(request, pk):
         comments = post.comments
         rating = post.likes.aggregate(Sum('value'))['value__sum']
         posts = Post.objects.exclude(id=post.pk).filter()
+        for tag in post.tags.all():
+            if posts_sort := posts.filter(tags=tag):
+                posts = posts_sort
+            else:
+                break
         context = {
             'post': post,
             'post_rating': rating if rating else 0,
             'comments': comments.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
             'form': CommentForm(),
+            'posts_by_tags': posts.filter(tags=post.tags.all().first()),
             'liked_post_by_user': False,
         }
-        if tags := post.tags.all():
-            for tag in tags:
-                if posts_sort := posts.filter(tags=tag):
-                    posts = posts_sort
-                else:
-                    break
-            context['posts_by_tags'] = posts
         if request.user.is_authenticated:
             user = request.user
             if post.likes.filter(user=user):

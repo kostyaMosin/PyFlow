@@ -10,3 +10,7 @@ def tags_creator(data):
         elif tag is None:
             tags.append(Tag.objects.create(title=tag_title))
     return tags
+
+
+def tags_to_string(data):
+    return f"#{' #'.join([tag.title for tag in data])}"

@@ -8,7 +8,7 @@ from django.template import loader
 
 from pyflow.forms import CommentForm, PostForm, SendEmailForm
 from pyflow.models import Post, Comment, CommentLike, PostLike, Tag, PostShow
-from pyflow.tags_creator import tags_creator
+from pyflow.tags_creator import tags_creator, tags_to_string
 from src import settings
 
 
@@ -158,39 +158,39 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
 
 
 def view_edit_delete_post(request, pk):
-    if request.method == 'GET':
-        if request.user.is_authenticated:
+    if request.user.is_authenticated:
+        if request.method == 'GET':
             post = Post.objects.get(id=pk)
             context = {
                 'form': PostForm(),
                 'post': post,
-                'tags': f"#{' #'.join([tag.title for tag in post.tags.all()])}",
+                'tags': tags_to_string(post.tags.all()),
             }
             return render(request, 'edit.html', context)
-        return redirect('login')
-    if request.method == 'POST':
-        if request.POST['button'] == 'delete':
-            post = Post.objects.get(id=pk)
-            post.delete()
-            return redirect('index')
-        if request.POST['button'] == 'save':
-            form = PostForm(request.POST)
-            post = Post.objects.get(id=pk)
-            if form.is_valid():
-                cd = form.cleaned_data
-                post.title = cd['title']
-                post.content = cd['content']
-                post.content_code = cd['content_code']
-                post.tags.set(tags_creator(cd['tags']))
-                post.save()
-                return redirect('detail', post.pk)
-            else:
-                context = {
-                    'form': PostForm(),
-                    'post': Post.objects.get(id=pk),
-                    'tags': f"#{' #'.join([tag.title for tag in post.tags.all()])}"
-                }
-                return render(request, 'edit.html', context)
+        if request.method == 'POST':
+            if request.POST['button'] == 'delete':
+                post = Post.objects.get(id=pk)
+                post.delete()
+                return redirect('index')
+            if request.POST['button'] == 'save':
+                form = PostForm(request.POST)
+                post = Post.objects.get(id=pk)
+                if form.is_valid():
+                    cd = form.cleaned_data
+                    post.title = cd['title']
+                    post.content = cd['content']
+                    post.content_code = cd['content_code']
+                    post.tags.set(tags_creator(cd['tags']))
+                    post.save()
+                    return redirect('detail', post.pk)
+                else:
+                    context = {
+                        'form': PostForm(),
+                        'post': Post.objects.get(id=pk),
+                        'tags': tags_to_string(post.tags.all())
+                    }
+                    return render(request, 'edit.html', context)
+    return redirect('login')
 
 
 def view_delete_comment(request, pk):

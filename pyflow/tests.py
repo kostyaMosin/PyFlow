@@ -6,7 +6,7 @@ from datetime import datetime as dt, timedelta
 
 from pyflow.forms import CommentForm, PostForm
 from pyflow.models import Post, Tag, PostLike, PostShow, Comment, CommentLike
-from pyflow.tags_creator import tags_creator
+from pyflow.tags_creator import tags_creator, tags_to_string
 
 
 class ViewTestCase(TestCase):
@@ -21,7 +21,8 @@ class ViewTestCase(TestCase):
         self.post_2 = Post.objects.create(
             title='title 2', content='content 2', content_code='content code 2', user=self.user_1
         )
-        self.post_1.tags.set(Tag.objects.filter())
+        self.post_1.tags.add(self.tag_1)
+        self.post_1.tags.add(self.tag_2)
         self.post_2.tags.add(self.tag_1)
         self.post_1.save()
         self.post_2.save()
@@ -343,7 +344,7 @@ class ViewTestCase(TestCase):
         self.assertEqual(new_post.title, title)
         self.assertEqual(new_post.content, content)
         self.assertEqual(new_post.content_code, content_code)
-        self.assertEqual(f"#{' #'.join([tag.title for tag in new_post.tags.all()])}", tags)
+        self.assertEqual(tags_to_string(new_post.tags.all()), tags)
         self.assertEqual(new_post.user, self.user_1)
         tag = Tag.objects.get(title='tag3')
         self.assertIsInstance(tag, Tag)
@@ -391,8 +392,8 @@ class ViewTestCase(TestCase):
         self.assertEqual(comment_1_out.likes.count(), 2)
         self.assertEqual(comment_1_out.rating, 2)
         self.assertEqual(comment_1_out.likes.all()[1].user, user_3)
-        self.assertEqual(comment_1_in, self.comment_1)
-        self.assertEqual(comment_1_out, self.comment_1)
+        self.assertEqual(comment_1_in.comment, self.comment_1.comment)
+        self.assertEqual(comment_1_out.comment, self.comment_1.comment)
 
     def test_add_dislike_value_post_method_with_obj_type_comment(self):
         user_3 = User.objects.create_user(username='user3')
@@ -415,3 +416,132 @@ class ViewTestCase(TestCase):
         self.assertEqual(comment_1_out.likes.all()[1].user, user_3)
         self.assertEqual(comment_1_in.comment, self.comment_1.comment)
         self.assertEqual(comment_1_out.comment, self.comment_1.comment)
+
+    def test_add_like_value_post_method_with_obj_type_post(self):
+        user_3 = User.objects.create_user(username='user3')
+        self.client.force_login(user_3)
+        obj_type = 'post'
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        post_1_in = response.context['post']
+        post_1_in_rating = response.context['post_rating']
+        self.assertEqual(post_1_in.likes.count(), 2)
+        self.assertEqual(post_1_in_rating, 2)
+        response = self.client.post(f'/rating/{obj_type}/{self.post_1.pk}', {'obj_type': obj_type,
+                                                                             'pk': self.post_1,
+                                                                             'button': 'like'})
+        self.assertRedirects(response, f'/post/{self.post_1.pk}', 302, fetch_redirect_response=False)
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        post_1_out = response.context['post']
+        post_1_out_rating = response.context['post_rating']
+        self.assertEqual(post_1_out.likes.count(), 3)
+        self.assertEqual(post_1_out_rating, 3)
+        self.assertEqual(post_1_out.likes.all()[2].user, user_3)
+        self.assertEqual(post_1_in.title, self.post_1.title)
+        self.assertEqual(post_1_out.title, self.post_1.title)
+
+    def test_add_dislike_value_post_method_with_obj_type_post(self):
+        user_3 = User.objects.create_user(username='user3')
+        self.client.force_login(user_3)
+        obj_type = 'post'
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        post_1_in = response.context['post']
+        post_1_in_rating = response.context['post_rating']
+        self.assertEqual(post_1_in.likes.count(), 2)
+        self.assertEqual(post_1_in_rating, 2)
+        response = self.client.post(f'/rating/{obj_type}/{self.post_1.pk}', {'obj_type': obj_type,
+                                                                             'pk': self.post_1,
+                                                                             'button': 'dislike'})
+        self.assertRedirects(response, f'/post/{self.post_1.pk}', 302, fetch_redirect_response=False)
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        post_1_out = response.context['post']
+        post_1_out_rating = response.context['post_rating']
+        self.assertEqual(post_1_out.likes.count(), 3)
+        self.assertEqual(post_1_out_rating, 1)
+        self.assertEqual(post_1_out.likes.all()[2].user, user_3)
+        self.assertEqual(post_1_in.title, self.post_1.title)
+        self.assertEqual(post_1_out.title, self.post_1.title)
+
+    def test_edit_delete_post_view_get_method_user_is_not_auth(self):
+        response = self.client.get('/post/edit/1', {'pk': self.post_1.pk})
+        self.assertRedirects(response, '/accounts/login/', 302, fetch_redirect_response=False)
+
+    def test_edit_delete_post_view_post_method_user_is_not_auth(self):
+        response = self.client.post('/post/edit/1', {'pk': self.post_1.pk,
+                                                     'button': 'save'})
+        self.assertRedirects(response, '/accounts/login/', 302, fetch_redirect_response=False)
+
+    def test_edit_post_view_get_method(self):
+        self.client.force_login(self.user_1)
+        response = self.client.get('/post/edit/1', {'pk': self.post_1.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'edit.html')
+        self.assertIn('form', response.context)
+        self.assertIsInstance(response.context['form'], PostForm)
+        self.assertIn('post', response.context)
+        post_1 = response.context['post']
+        self.assertIsInstance(post_1, Post)
+        self.assertEqual(post_1.title, self.post_1.title)
+        self.assertEqual(post_1.content, self.post_1.content)
+        self.assertEqual(post_1.content_code, self.post_1.content_code)
+        tags = response.context['tags']
+        self.assertEqual(tags, tags_to_string(self.post_1.tags.all()))
+
+    def test_edit_post_view_post_method_with_button_is_delete(self):
+        self.client.force_login(self.user_1)
+        response = self.client.post(f'/post/edit/{self.post_1.pk}', {'pk': self.post_1.pk,
+                                                                     'button': 'delete'})
+        self.assertRedirects(response, '/', 302, fetch_redirect_response=False)
+        posts = Post.objects.all()
+        self.assertNotIn(self.post_1, posts)
+        response = self.client.get('/')
+        posts = response.context['posts']
+        self.assertIsInstance(posts, QuerySet)
+        self.assertNotIn(self.post_1, posts)
+
+    def test_edit_post_view_post_method_with_button_is_save(self):
+        self.client.force_login(self.user_1)
+        post_1_in = self.post_1
+        tag = self.post_1.tags.all()[0].title
+        title = 'title'
+        content = 'content'
+        content_code = 'content_code'
+        tags = '#tag3'
+        response = self.client.post(f'/post/edit/{self.post_1.pk}', {'pk': self.post_1.pk,
+                                                                     'button': 'save',
+                                                                     'title': title,
+                                                                     'content': content,
+                                                                     'content_code': content_code,
+                                                                     'tags': tags})
+        self.assertRedirects(response, f'/post/{self.post_1.pk}', 302, fetch_redirect_response=False)
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        post_1_out = response.context['post']
+        self.assertEqual(post_1_out.title, title)
+        self.assertEqual(post_1_out.content, content)
+        self.assertEqual(post_1_out.content_code, content_code)
+        self.assertEqual(tags_to_string(post_1_out.tags.all()), tags)
+        self.assertNotEqual(post_1_in.title, post_1_out.title)
+        self.assertNotEqual(post_1_in.content, post_1_out.content)
+        self.assertNotEqual(post_1_in.content_code, post_1_out.content_code)
+        self.assertNotEqual(tag, post_1_out.tags.all()[0].title)
+
+    def test_edit_post_view_post_method_form_is_not_valid(self):
+        self.client.force_login(self.user_1)
+        content = 'content'
+        content_code = 'content_code'
+        tags = '#tag3'
+        response = self.client.post(f'/post/edit/{self.post_1.pk}', {'pk': self.post_1.pk,
+                                                                     'button': 'save',
+                                                                     'content': content,
+                                                                     'content_code': content_code,
+                                                                     'tags': tags})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('form', response.context)
+        self.assertIsInstance(response.context['form'], PostForm)
+        post_1 = response.context['post']
+        self.assertIsInstance(post_1, Post)
+        self.assertEqual(post_1.title, self.post_1.title)
+        self.assertEqual(post_1.content, self.post_1.content)
+        self.assertEqual(post_1.content_code, self.post_1.content_code)
+        self.assertEqual(tags_to_string(post_1.tags.all()), tags_to_string(self.post_1.tags.all()))
+        tags = response.context['tags']
+        self.assertEqual(tags, tags_to_string(self.post_1.tags.all()))

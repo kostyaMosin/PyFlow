@@ -194,33 +194,45 @@ def view_edit_delete_post(request, pk):
 
 
 def view_delete_comment(request, pk):
-    if request.method == 'POST':
-        comment = Comment.objects.get(id=pk)
-        post_pk = comment.post.pk
-        comment.delete()
-        return redirect('detail', post_pk)
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            comment = Comment.objects.get(id=pk)
+            post_pk = comment.post.pk
+            comment.delete()
+            return redirect('detail', post_pk)
+        return redirect('index')
+    return redirect('login')
 
 
-def view_send_post(request, pk):
-    if request.method == 'GET':
-        context = {
-            'send_form': SendEmailForm(),
-            'post': Post.objects.get(id=pk)
-        }
-        return render(request, 'send_post.html', context)
-    else:
-        form = SendEmailForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            html_message = loader.render_to_string(
-                'email.html', {'post': Post.objects.get(id=pk)},
-            )
-            send_mail(
-                subject=cd['topic'],
-                message='',
-                html_message=html_message,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[cd['receiver']],
-                fail_silently=False,
-            )
-    return redirect('detail', pk)
+def view_send_post_by_email(request, pk):
+    if request.user.is_authenticated:
+        post = Post.objects.get(id=pk)
+        if request.method == 'GET':
+            context = {
+                'send_form': SendEmailForm(),
+                'post': Post.objects.get(id=pk)
+            }
+            return render(request, 'send_post.html', context)
+        else:
+            form = SendEmailForm(request.POST)
+            if form.is_valid():
+                cd = form.cleaned_data
+                html_message = loader.render_to_string(
+                    'email.html', {'post': post},
+                )
+                send_mail(
+                    subject=cd['topic'],
+                    message='',
+                    html_message=html_message,
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[cd['receiver']],
+                    fail_silently=False,
+                )
+            else:
+                context = {
+                    'send_form': form,
+                    'post': post
+                }
+                return render(request, 'send_post.html', context)
+        return redirect('detail', pk)
+    return redirect('login')

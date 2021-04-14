@@ -3,7 +3,7 @@ from django.urls import path
 from pyflow.views import view_main, \
     view_detail, view_add_like_or_dislike_value, view_create_post, \
     view_edit_delete_post, view_delete_comment, view_sort_by_tag, \
-    view_sort_by_date, view_send_post
+    view_sort_by_date, view_send_post_by_email
 
 urlpatterns = [
     path('', view_main, name='index'),
@@ -14,5 +14,5 @@ urlpatterns = [
     path('post/date/', view_sort_by_date, name='post-by-date'),
     path('comment/delete/<int:pk>', view_delete_comment, name='delete-comment'),
     path('rating/<obj_type>/<int:pk>', view_add_like_or_dislike_value, name='rating'),
-    path('send_post/<int:pk>', view_send_post, name='send-post'),
+    path('send_post/<int:pk>', view_send_post_by_email, name='send-post'),
 ]

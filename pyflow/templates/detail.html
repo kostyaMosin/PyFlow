@@ -132,11 +132,17 @@
                                                 </form>
                                             </div>
                                         </div>
-                                        <div class="comment-text  js-comment-text-and-form">
-                                            <div class="comment-body js-comment-edit-hide">
+                                        <div class="comment-text">
+                                            <div class="comment-body">
                                                 <span class="comment-copy">{{ comment.comment }}</span> - <a
-                                                    class="comment-user" href="" title="">{{ comment.user }}</a>
+                                                    class="comment-user" title="">{{ comment.user }}</a>
                                                 <span class="comment-date" dir="ltr"><span class="relativetime-clean">{{ comment.create_at }}</span></span>
+                                                {% if user == comment.user %}
+                                                <form method="post" action="{% url 'delete-comment' comment.pk %}">{% csrf_token %}
+                                                    <button class="grid--cell s-btn s-btn__danger ws-nowrap discard-question" style="padding: 2px; float: right"
+                                                            type="submit" name="button" value="delete">Удалить</button>
+                                                </form>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </li>

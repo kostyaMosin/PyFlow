@@ -1,10 +1,11 @@
 from django.contrib.auth.models import User
+from django.core import mail
 from django.test import TestCase
 from django.db.models import QuerySet
 import pytz
 from datetime import datetime as dt, timedelta
 
-from pyflow.forms import CommentForm, PostForm
+from pyflow.forms import CommentForm, PostForm, SendEmailForm
 from pyflow.models import Post, Tag, PostLike, PostShow, Comment, CommentLike
 from pyflow.tags_creator import tags_creator, tags_to_string
 
@@ -545,3 +546,63 @@ class ViewTestCase(TestCase):
         self.assertEqual(tags_to_string(post_1.tags.all()), tags_to_string(self.post_1.tags.all()))
         tags = response.context['tags']
         self.assertEqual(tags, tags_to_string(self.post_1.tags.all()))
+
+    def test_send_post_by_email_view_with_user_is_not_auth(self):
+        response = self.client.get('/send_post/1', {'pk': 1})
+        self.assertRedirects(response, '/accounts/login/', 302, fetch_redirect_response=False)
+
+    def test_send_post_by_email_view_get_method(self):
+        self.client.force_login(self.user_1)
+        response = self.client.get(f'/send_post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'send_post.html')
+        self.assertIn('send_form', response.context)
+        self.assertIsInstance(response.context['send_form'], SendEmailForm)
+        self.assertIn('post', response.context)
+        post_1 = response.context['post']
+        self.assertIsInstance(post_1, Post)
+        self.assertEqual(post_1, self.post_1)
+        self.assertEqual(post_1.title, self.post_1.title)
+
+    def test_send_post_by_email_view_post_method(self):
+        self.client.force_login(self.user_1)
+        receiver = 'from@example.com'
+        topic = 'topic'
+        response = self.client.post(f'/send_post/{self.post_1.pk}', {'pk': self.post_1.pk,
+                                                                     'receiver': receiver,
+                                                                     'topic': topic})
+        self.assertRedirects(response, f'/post/{self.post_1.pk}', 302, fetch_redirect_response=False)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, topic)
+
+    def test_send_post_by_email_view_post_method_form_is_not_valid(self):
+        self.client.force_login(self.user_1)
+        topic = 'topic'
+        response = self.client.post(f'/send_post/{self.post_1.pk}', {'pk': self.post_1.pk,
+                                                                     'topic': topic})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertIn('send_form', response.context)
+        self.assertIsInstance(response.context['send_form'], SendEmailForm)
+        self.assertIn('post', response.context)
+        self.assertIsInstance(response.context['post'], Post)
+
+    def test_delete_comment_with_user_is_not_auth(self):
+        response = self.client.post('/comment/delete/1', {'pk': 1})
+        self.assertRedirects(response, '/accounts/login/', 302, fetch_redirect_response=False)
+
+    def test_delete_comment_get(self):
+        self.client.force_login(self.user_1)
+        response = self.client.get('/comment/delete/1', {'pk': 1})
+        self.assertRedirects(response, '/', 302, fetch_redirect_response=False)
+
+    def test_delete_comment_post(self):
+        self.client.force_login(self.user_1)
+        response = self.client.post(f'/comment/delete/{self.comment_1.pk}', {'pk': self.comment_1.pk})
+        self.assertRedirects(response, f'/post/{self.comment_1.post.pk}', 302, fetch_redirect_response=False)
+        comments = Comment.objects.all()
+        self.assertNotIn(self.comment_1, comments)
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        self.assertIn('comments', response.context)
+        comments = response.context['comments']
+        self.assertNotIn(self.comment_1, comments)

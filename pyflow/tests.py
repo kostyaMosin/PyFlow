@@ -285,3 +285,4 @@ class ViewTestCase(TestCase):
         self.assertEqual(self.post_2, post_2)
         self.assertEqual(post_2.shows.count(), self.post_2.shows.count())
         self.assertEqual(self.post_2.shows.count(), 2)
+        self.assertEqual(self.post_2.shows.all()[1].user, self.user_2)

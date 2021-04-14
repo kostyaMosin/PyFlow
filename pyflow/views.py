@@ -85,46 +85,47 @@ def view_detail(request, pk):
                 PostShow.objects.create(post=post, user=user)
         return render(request, 'detail.html', context)
     if request.method == 'POST':
-        post = Post.objects.get(id=pk)
-        form = CommentForm(request.POST)
-        user = request.user
-        if form.is_valid():
-            cd = form.cleaned_data
-            comment = cd['comment']
-            Comment.objects.create(comment=comment, post=post, user=user)
-            return redirect('detail', post.pk)
-        else:
-            return redirect('detail', post.pk)
+        if request.user.is_authenticated:
+            post = Post.objects.get(id=pk)
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                cd = form.cleaned_data
+                comment = cd['comment']
+                Comment.objects.create(comment=comment, post=post, user=request.user)
+                return redirect('detail', post.pk)
+            else:
+                return redirect('detail', post.pk)
+        return redirect('login')
 
 
 def view_create_post(request):
-    if request.method == 'GET':
-        if request.user.is_authenticated:
+    if request.user.is_authenticated:
+        if request.method == 'GET':
             context = {
                 'form': PostForm(),
             }
             return render(request, 'create.html', context)
-        return redirect('login')
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        user = request.user
-        if form.is_valid():
-            cd = form.cleaned_data
-            data = {
-                'title': cd['title'],
-                'content': cd['content'],
-                'content_code': cd['content_code'],
-                'user': user,
-            }
-            post = Post.objects.create(**data)
-            post.tags.set(tags_creator(cd['tags']))
-            post.save()
-            return redirect('detail', post.pk)
-        else:
-            context = {
-                'form': PostForm(),
-            }
-            return render(request, 'create.html', context)
+        if request.method == 'POST':
+            form = PostForm(request.POST)
+            user = request.user
+            if form.is_valid():
+                cd = form.cleaned_data
+                data = {
+                    'title': cd['title'],
+                    'content': cd['content'],
+                    'content_code': cd['content_code'],
+                    'user': user,
+                }
+                post = Post.objects.create(**data)
+                post.tags.set(tags_creator(cd['tags']))
+                post.save()
+                return redirect('detail', post.pk)
+            else:
+                context = {
+                    'form': PostForm(),
+                }
+                return render(request, 'create.html', context)
+    return redirect('login')
 
 
 def view_add_like_or_dislike_value(request, obj_type, pk):

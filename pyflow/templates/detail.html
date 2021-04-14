@@ -166,9 +166,6 @@
                     <div class="related">
                         {% for post in posts_by_tags %}
                         <div class="spacer">
-                            <!--                                <a href="/q/126892" title="Затемнение родительского окна (wpf)">-->
-                            <!--                                    <div class="answer-votes answered-accepted default">3</div>-->
-                            <!--                                </a>-->
                             <a class="question-hyperlink" href="{% url 'detail' post.pk %}">{{ post.title }}</a>
                         </div>
                         {% endfor %}

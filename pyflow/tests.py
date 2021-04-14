@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 import pytz
 from datetime import datetime as dt, timedelta
 
-from pyflow.forms import CommentForm
+from pyflow.forms import CommentForm, PostForm
 from pyflow.models import Post, Tag, PostLike, PostShow, Comment, CommentLike
 
 
@@ -286,3 +286,40 @@ class ViewTestCase(TestCase):
         self.assertEqual(post_2.shows.count(), self.post_2.shows.count())
         self.assertEqual(self.post_2.shows.count(), 2)
         self.assertEqual(self.post_2.shows.all()[1].user, self.user_2)
+
+    def test_detail_view_post(self):
+        self.client.force_login(self.user_1)
+        self.assertEqual(self.post_1.comments.count(), 2)
+        comment = 'hello'
+        response = self.client.post(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk, 'comment': comment})
+        self.assertRedirects(response, f'/post/{self.post_1.pk}', 302, fetch_redirect_response=False)
+        self.assertEqual(self.post_1.comments.count(), 3)
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        post_1 = response.context['post']
+        self.assertEqual(post_1.comments.count(), 3)
+        comments = response.context['comments']
+        self.assertEqual(comments[0].comment, comment)
+        self.assertEqual(comments[0].user, self.user_1)
+
+    def test_detail_view_post_user_is_not_auth(self):
+        comment = 'hello'
+        response = self.client.post(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk, 'comment': comment})
+        self.assertRedirects(response, '/accounts/login/', 302, fetch_redirect_response=False)
+
+    def test_detail_view_post_form_is_not_valid(self):
+        self.client.force_login(self.user_1)
+        comment = 'hello'
+        response = self.client.post(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk, 'comment': comment})
+        self.assertRedirects(response, f'/post/{self.post_1.pk}', 302, fetch_redirect_response=False)
+
+    def test_create_post_view_get(self):
+        self.client.force_login(self.user_1)
+        response = self.client.get('/post/create/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'create.html')
+        self.assertIn('form', response.context)
+        self.assertIsInstance(response.context['form'], PostForm)
+
+    def test_create_post_view_get_user_is_not_auth(self):
+        response = self.client.get(f'/post/create/')
+        self.assertRedirects(response, '/accounts/login/', 302, fetch_redirect_response=False)

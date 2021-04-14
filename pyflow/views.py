@@ -77,11 +77,11 @@ def view_detail(request, pk):
             user = request.user
             if post.likes.filter(user=user):
                 context['liked_post_by_user'] = True
-            context['comment_add_or_like_by_user'] = list(comments.filter(user=user))
+            context['comment_add_or_comment_like_by_user'] = list(comments.filter(user=user))
             for comment in comments.all():
                 if comment.likes.filter(user=user):
-                    context['comment_add_or_like_by_user'].append(comment)
-            if not bool(post.shows.filter(user=user)):
+                    context['comment_add_or_comment_like_by_user'].append(comment)
+            if not post.shows.filter(user=user):
                 PostShow.objects.create(post=post, user=user)
         return render(request, 'detail.html', context)
     if request.method == 'POST':
@@ -100,12 +100,11 @@ def view_detail(request, pk):
 def view_create_post(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
-            return redirect('login')
-        else:
             context = {
                 'form': PostForm(),
             }
             return render(request, 'create.html', context)
+        return redirect('login')
     if request.method == 'POST':
         form = PostForm(request.POST)
         user = request.user
@@ -133,33 +132,31 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
         post_pk = pk
         user = request.user
         if request.user.is_authenticated:
-            return redirect('login')
-        button = request.POST['button']
-        value = 1 if button == 'like' else -1
-        if obj_type == 'comment':
-            comment = Comment.objects.get(id=pk)
-            data = {
-                'value': value,
-                'comment': comment,
-                'user': user,
-            }
-            CommentLike.objects.create(**data)
-            post_pk = comment.post.pk
-        if obj_type == 'post':
-            data = {
-                'value': value,
-                'post': Post.objects.get(id=post_pk),
-                'user': user,
-            }
-            PostLike.objects.create(**data)
-        return redirect('detail', post_pk)
+            button = request.POST['button']
+            value = 1 if button == 'like' else -1
+            if obj_type == 'comment':
+                comment = Comment.objects.get(id=pk)
+                data = {
+                    'value': value,
+                    'comment': comment,
+                    'user': user,
+                }
+                CommentLike.objects.create(**data)
+                post_pk = comment.post.pk
+            if obj_type == 'post':
+                data = {
+                    'value': value,
+                    'post': Post.objects.get(id=post_pk),
+                    'user': user,
+                }
+                PostLike.objects.create(**data)
+            return redirect('detail', post_pk)
+        return redirect('login')
 
 
 def view_edit_delete_post(request, pk):
     if request.method == 'GET':
         if request.user.is_authenticated:
-            return redirect('login')
-        else:
             post = Post.objects.get(id=pk)
             context = {
                 'form': PostForm(),
@@ -167,6 +164,7 @@ def view_edit_delete_post(request, pk):
                 'tags': f"#{' #'.join([tag.title for tag in post.tags.all()])}",
             }
             return render(request, 'edit.html', context)
+        return redirect('login')
     if request.method == 'POST':
         if request.POST['button'] == 'delete':
             post = Post.objects.get(id=pk)

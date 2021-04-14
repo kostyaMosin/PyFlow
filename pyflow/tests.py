@@ -1,8 +1,10 @@
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.db.models import QuerySet
 import pytz
 from datetime import datetime as dt, timedelta
+
+from django.urls import reverse
 
 from pyflow.forms import CommentForm
 from pyflow.models import Post, Tag, PostLike, PostShow, Comment, CommentLike
@@ -191,6 +193,7 @@ class ViewTestCase(TestCase):
         self.assertEqual(list(posts), [self.post_1, self.post_2])
 
     def test_view_detail_get(self):
+        self.client.force_login(self.user_1)
         response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'detail.html')
@@ -235,4 +238,13 @@ class ViewTestCase(TestCase):
         post_2 = posts_by_tags.get(id=self.post_2.pk)
         self.assertEqual(post_2.title, self.post_2.title)
         self.assertIn('liked_post_by_user', response.context)
-        self.assertEqual(response.context['liked_post_by_user'], False)
+        self.assertTrue(response.context['liked_post_by_user'])
+        self.assertIn('comment_add_or_comment_like_by_user', response.context)
+        comment_add_or_comment_like_by_user = response.context['comment_add_or_comment_like_by_user']
+        self.assertIn(self.comment_1, comment_add_or_comment_like_by_user)
+        comment_1 = comment_add_or_comment_like_by_user[0]
+        self.assertEqual(comment_1.comment, self.comment_1.comment)
+        self.assertEqual(comment_1.user, self.comment_1.user)
+        self.assertEqual(comment_1.post, self.comment_1.post)
+        self.assertEqual(self.post_1.shows.count(), post_1.shows.count())
+        self.assertEqual(post_1.shows.count(), 2)

@@ -361,3 +361,57 @@ class ViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'create.html')
         self.assertIn('form', response.context)
+
+    def test_add_like_or_dislike_value_post_method_user_is_not_auth(self):
+        response = self.client.post(f'/rating/post/{self.post_1.pk}', {'obj_type': 'post',
+                                                                       'pk': self.post_1.pk,
+                                                                       'button': 'like'})
+        self.assertRedirects(response, '/accounts/login/', 302, fetch_redirect_response=False)
+
+    def test_add_like_or_dislike_value_get_method_user_is_not_auth(self):
+        response = self.client.get(f'/rating/post/{self.post_1.pk}')
+        self.assertRedirects(response, '/accounts/login/', 302, fetch_redirect_response=False)
+
+    def test_add_like_value_post_method_with_obj_type_comment(self):
+        user_3 = User.objects.create_user(username='user3')
+        self.client.force_login(user_3)
+        obj_type = 'comment'
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        comments = response.context['comments']
+        comment_1_in = comments.get(id=self.comment_1.pk)
+        self.assertEqual(comment_1_in.likes.count(), 1)
+        self.assertEqual(comment_1_in.rating, 1)
+        response = self.client.post(f'/rating/{obj_type}/{self.comment_1.pk}', {'obj_type': obj_type,
+                                                                                'pk': self.comment_1,
+                                                                                'button': 'like'})
+        self.assertRedirects(response, f'/post/{self.post_1.pk}', 302, fetch_redirect_response=False)
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        comments = response.context['comments']
+        comment_1_out = comments.get(id=self.comment_1.pk)
+        self.assertEqual(comment_1_out.likes.count(), 2)
+        self.assertEqual(comment_1_out.rating, 2)
+        self.assertEqual(comment_1_out.likes.all()[1].user, user_3)
+        self.assertEqual(comment_1_in, self.comment_1)
+        self.assertEqual(comment_1_out, self.comment_1)
+
+    def test_add_dislike_value_post_method_with_obj_type_comment(self):
+        user_3 = User.objects.create_user(username='user3')
+        self.client.force_login(user_3)
+        obj_type = 'comment'
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        comments = response.context['comments']
+        comment_1_in = comments.get(id=self.comment_1.pk)
+        self.assertEqual(comment_1_in.likes.count(), 1)
+        self.assertEqual(comment_1_in.rating, 1)
+        response = self.client.post(f'/rating/{obj_type}/{self.comment_1.pk}', {'obj_type': obj_type,
+                                                                                'pk': self.comment_1,
+                                                                                'button': 'dislike'})
+        self.assertRedirects(response, f'/post/{self.post_1.pk}', 302, fetch_redirect_response=False)
+        response = self.client.get(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
+        comments = response.context['comments']
+        comment_1_out = comments.get(id=self.comment_1.pk)
+        self.assertEqual(comment_1_out.likes.count(), 2)
+        self.assertEqual(comment_1_out.rating, 0)
+        self.assertEqual(comment_1_out.likes.all()[1].user, user_3)
+        self.assertEqual(comment_1_in.comment, self.comment_1.comment)
+        self.assertEqual(comment_1_out.comment, self.comment_1.comment)

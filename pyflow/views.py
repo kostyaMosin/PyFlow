@@ -129,10 +129,10 @@ def view_create_post(request):
 
 
 def view_add_like_or_dislike_value(request, obj_type, pk):
-    if request.method == 'POST':
-        post_pk = pk
-        user = request.user
-        if request.user.is_authenticated:
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            post_pk = pk
+            user = request.user
             button = request.POST['button']
             value = 1 if button == 'like' else -1
             if obj_type == 'comment':
@@ -152,7 +152,9 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
                 }
                 PostLike.objects.create(**data)
             return redirect('detail', post_pk)
-        return redirect('login')
+        if request.method == 'GET':
+            return redirect('index')
+    return redirect('login')
 
 
 def view_edit_delete_post(request, pk):

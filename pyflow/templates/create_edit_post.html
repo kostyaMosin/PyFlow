@@ -19,7 +19,7 @@
                         <div class="bg-white bar-sm bs-md p16 ba bc-black-100">
                             <div class="ps-relative mb16" id="post-title">
                                 <div class="grid fl1 fd-column">
-                                    <label class="d-block s-label mb4" for="title">
+                                    <label class="d-block s-label mb4">
                                         Заголовок
                                         <div class="grid">
                                             <p class="s-description mt2 grid--cell9">Будьте конкретны. Представьте, что
@@ -76,6 +76,13 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div style="margin-top:10px">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                <p style="color: red">{{ field }}: {{ error }}</p>
+                                    {% endfor %}
+                                {% endfor %}
                             </div>
                         </div>
                     </div>

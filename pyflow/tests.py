@@ -6,14 +6,15 @@ from datetime import datetime as dt, timedelta
 
 from pyflow.forms import CommentForm, PostForm
 from pyflow.models import Post, Tag, PostLike, PostShow, Comment, CommentLike
+from pyflow.tags_creator import tags_creator
 
 
 class ViewTestCase(TestCase):
     def setUp(self):
         self.user_1 = User.objects.create_user(username='user1')
         self.user_2 = User.objects.create_user(username='user2')
-        self.tag_1 = Tag.objects.create(title='tag 1')
-        self.tag_2 = Tag.objects.create(title='tag 2')
+        self.tag_1 = Tag.objects.create(title='tag1')
+        self.tag_2 = Tag.objects.create(title='tag2')
         self.post_1 = Post.objects.create(
             title='title 1', content='content 1', content_code='content code 1', user=self.user_1
         )
@@ -315,11 +316,48 @@ class ViewTestCase(TestCase):
     def test_create_post_view_get(self):
         self.client.force_login(self.user_1)
         response = self.client.get('/post/create/')
+        self.assertTemplateUsed(response, 'create.html')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'create.html')
         self.assertIn('form', response.context)
         self.assertIsInstance(response.context['form'], PostForm)
 
-    def test_create_post_view_get_user_is_not_auth(self):
-        response = self.client.get(f'/post/create/')
+    def test_create_post_view_user_is_not_auth(self):
+        response = self.client.get('/post/create/')
         self.assertRedirects(response, '/accounts/login/', 302, fetch_redirect_response=False)
+
+    def test_create_post_view_post(self):
+        self.client.force_login(self.user_1)
+        title = 'title 3'
+        content = 'content 3'
+        content_code = 'content code 3'
+        tags = '#tag3'
+        response = self.client.post('/post/create/', {'title': title,
+                                                      'content': content,
+                                                      'content_code': content_code,
+                                                      'tags': tags,
+                                                      'user': self.user_1})
+        self.assertRedirects(response, '/post/3', 302, fetch_redirect_response=False)
+        new_post = Post.objects.filter(title=title).first()
+        self.assertIsInstance(new_post, Post)
+        self.assertEqual(new_post.title, title)
+        self.assertEqual(new_post.content, content)
+        self.assertEqual(new_post.content_code, content_code)
+        self.assertEqual(f"#{' #'.join([tag.title for tag in new_post.tags.all()])}", tags)
+        self.assertEqual(new_post.user, self.user_1)
+        tag = Tag.objects.get(title='tag3')
+        self.assertIsInstance(tag, Tag)
+        self.assertEqual(tag.title, tags_creator(tags)[0].title)
+
+    def test_create_post_view_post_form_is_not_valid(self):
+        self.client.force_login(self.user_1)
+        title = 'title 3'
+        content = 'content 3'
+        content_code = 'content code 3'
+        response = self.client.post('/post/create/', {'title': title,
+                                                      'content': content,
+                                                      'content_code': content_code,
+                                                      'user': self.user_1})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'create.html')
+        self.assertIn('form', response.context)

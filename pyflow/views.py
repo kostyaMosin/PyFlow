@@ -122,7 +122,7 @@ def view_create_post(request):
                 return redirect('detail', post.pk)
             else:
                 context = {
-                    'form': PostForm(),
+                    'form': form,
                 }
                 return render(request, 'create.html', context)
     return redirect('login')

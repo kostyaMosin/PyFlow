@@ -3,26 +3,26 @@
 {% block block_title %} Create Post {% endblock %}
 
 {% block headline %}
-            <div class="fs-headline1">
-                Create public post
-            </div>
+<div class="fs-headline1">
+    Create public post
+</div>
 {% endblock %}
         
 {% block form_action %}
-                <form action="{% url 'create-post' %}" class="post-form" id="post-form" method="post">
+<form action="{% url 'create-post' %}" class="post-form" id="post-form" method="post">
 {% endblock %}
 
 {% block input_title %}
-                    <input class="s-input" id="title" name="title"
-                            placeholder="В чём заключается ваш вопрос? Будьте конкретны." type="text">
+    <input class="s-input" id="id_title" name="title"
+           placeholder="В чём заключается ваш вопрос? Будьте конкретны." type="text">
 {% endblock %}                              
 
 {% block input_tags %}
-                    <input class="s-input box-border" name="tags" placeholder="например, #python #django" type="text">
+    <input class="s-input box-border" name="tags" placeholder="например, #python #django" type="text">
 {% endblock %}                                                  
 
 {% block button %}
-                    <div class="grid gsx gs4 ai-center mt32">
-                        <input class="grid--cell s-btn s-btn__primary s-btn__icon ws-nowrap" type="submit" value="Сохранить пост">
-                    </div>
+    <div class="grid gsx gs4 ai-center mt32">
+        <input class="grid--cell s-btn s-btn__primary s-btn__icon ws-nowrap" type="submit" value="Сохранить пост">
+    </div>
 {% endblock %}                

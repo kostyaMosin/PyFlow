@@ -1,5 +1,5 @@
 from django.core.mail import send_mail
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F, Q
 from django.shortcuts import render, redirect
 from datetime import datetime as dt, timedelta
 import pytz
@@ -236,3 +236,18 @@ def view_send_post_by_email(request, pk):
                 return render(request, 'send_post.html', context)
         return redirect('detail', pk)
     return redirect('login')
+
+
+def view_search_posts(request):
+    if request.method == 'GET':
+        key_words = request.GET.get('q').strip().split(' ')
+        posts = Post.objects.filter()
+        posts_query = Post.objects.none()
+        for kw in key_words:
+            posts_query |= posts.filter(Q(title__icontains=kw) | Q(content__icontains=kw))
+        tags = Tag.objects.filter()
+        context = {
+            'posts': posts_query.annotate(rating=Sum(F('likes__value'))).order_by('-create_at'),
+            'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts'),
+        }
+        return render(request, 'posts_content.html', context)

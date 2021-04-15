@@ -20,9 +20,15 @@
                 </div>
             </div>
             <div class="grid ai-end mb16 sm:fd-column">
-                
-                {% block topbar %}{% endblock %}
-            
+                <div class="grid--cell ml16 fl-shrink0">
+                    <div class=" grid s-btn-group">
+                        <form method="get" action="{% url 'post-by-date' %}">
+                            <button class="grid--cell s-btn s-btn__muted s-btn__outlined" name="button" value="top">Топ</button>
+                            <button class="grid--cell s-btn s-btn__muted s-btn__outlined" name="button" value="week">За неделю</button>
+                            <button class="grid--cell s-btn s-btn__muted s-btn__outlined" name="button" value="month">За месяц</button>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div class="flush-left" id="qlist-wrapper">
                 <div id="question-mini-list">

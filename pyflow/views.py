@@ -251,3 +251,4 @@ def view_search_posts(request):
             'tags': tags.annotate(tag_posts=Count(F('posts'))).order_by('-tag_posts'),
         }
         return render(request, 'posts_content.html', context)
+    return redirect('index')

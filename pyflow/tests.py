@@ -17,10 +17,10 @@ class ViewTestCase(TestCase):
         self.tag_1 = Tag.objects.create(title='tag1')
         self.tag_2 = Tag.objects.create(title='tag2')
         self.post_1 = Post.objects.create(
-            title='title 1', content='content 1', content_code='content code 1', user=self.user_1
+            title='title1', content='content1', content_code='content_code1', user=self.user_1
         )
         self.post_2 = Post.objects.create(
-            title='title 2', content='content 2', content_code='content code 2', user=self.user_1
+            title='title2', content='content2', content_code='content_code2', user=self.user_1
         )
         self.post_1.tags.add(self.tag_1)
         self.post_1.tags.add(self.tag_2)
@@ -606,3 +606,27 @@ class ViewTestCase(TestCase):
         self.assertIn('comments', response.context)
         comments = response.context['comments']
         self.assertNotIn(self.comment_1, comments)
+
+    def test_search_posts_view_get(self):
+        kw_1 = self.post_1.title
+        kw_2 = self.post_2.content
+        key_words = f'{kw_1[3:]} {kw_2[2:]}'
+        response = self.client.get('/search/', {'q': key_words})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'posts_content.html')
+        self.assertIn('posts', response.context)
+        posts = response.context['posts']
+        self.assertIsInstance(posts, QuerySet)
+        self.assertIn(self.post_1, posts)
+        self.assertIn(self.post_1, posts)
+        self.assertEqual(len(posts), 2)
+        post_1 = posts.get(id=self.post_1.pk)
+        post_2 = posts.get(id=self.post_2.pk)
+        self.assertEqual(post_1, self.post_1)
+        self.assertEqual(post_2, self.post_2)
+        self.assertEqual(post_1.title, kw_1)
+        self.assertEqual(post_2.content, kw_2)
+
+    def test_search_posts_view_post(self):
+        response = self.client.post('/search/', {'q': 'qqq'})
+        self.assertRedirects(response, '/', 302, fetch_redirect_response=False)

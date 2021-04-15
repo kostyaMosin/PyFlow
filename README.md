@@ -1,7 +1,7 @@
 PyFlow
 ---------
 
-A Django URL Shortener based on python [PyFlow](https://github.com/kostyaMosin/PyFlow).
+A Django PyFlow web app based on python [PyFlow](https://github.com/kostyaMosin/PyFlow).
 
 Django-PyFlow is a community of Python developers.
 

@@ -3,36 +3,24 @@
 {% block block_title %} Edit Post {% endblock %}
 
 {% block headline %}
-            <div class="fs-headline1">
-                Edit public post
-            </div>
+<div class="fs-headline1">
+    Edit public post
+</div>
 {% endblock %}
         
-{% block form_action %}
-                <form action="{% url 'edit-delete-post' post.pk %}" class="post-form" id="post-form" method="post">
-{% endblock %}                    
+{% block form_action %}{% url 'edit-delete-post' post.pk %}{% endblock %}
 
-{% block input_title %}                                        
-                    <input class="s-input" id="title" name="title" type="text" value="{{ post.title }}">
-{% endblock %}                                    
-                                    
 {% block content_text %}{{ post.content }}{% endblock %}
                                             
-{% block content_code_text %}{{ post.content_code }}{% endblock %}
-
-{% block input_tags %}                                                    
-                    <input class="s-input box-border" name="tags" type="text" value="{{ tags }}">
-{% endblock %}                                                 
-                                                
-{% block button %}                        
-                        <div class="grid gsx gs4 ai-center mt32">
-                            <button class="grid--cell s-btn s-btn__primary s-btn__icon ws-nowrap"
-                                    type="submit" name="button" value="save">Сохранить пост</button>
-                            {% if user.is_authenticated %}
-                            {% if user == post.user %}
-                            <button class="grid--cell s-btn s-btn__danger ws-nowrap discard-question"
-                                    type="submit" name="button" value="delete">Удалить пост</button>
-                            {% endif %}
-                            {% endif %}
-                        </div>
+{% block button %}
+<div class="grid gsx gs4 ai-center mt32">
+    <button class="grid--cell s-btn s-btn__primary s-btn__icon ws-nowrap"
+            type="submit" name="button" value="save">Сохранить пост</button>
+    {% if user.is_authenticated %}
+    {% if user == post.user %}
+    <button class="grid--cell s-btn s-btn__danger ws-nowrap discard-question"
+            type="submit" name="button" value="delete">Удалить пост</button>
+    {% endif %}
+    {% endif %}
+</div>
 {% endblock %}

@@ -13,7 +13,7 @@
         </div>
         <div class="grid ai-start jc-space-between">
             <div class="grid--cell fl1 wmn0">
-                {% block form_action %}{% endblock%}
+                <form action="{% block form_action %}{% endblock %}" class="post-form" id="post-form" method="post">
                     {% csrf_token %}
                     <div id="question-form">
                         <div class="bg-white bar-sm bs-md p16 ba bc-black-100">
@@ -26,7 +26,16 @@
                                                 вы задаёте вопрос другому человеку.</p>
                                         </div>
                                     </label>
-                                    <div class="fl1 ps-relative">{% block input_title %}{% endblock%}</div>
+                                    <div class="fl1 ps-relative">
+                                        <input class="s-input"
+                                               id="id_title" name="title"
+                                               placeholder="В чём заключается ваш вопрос? Будьте конкретны."
+                                               type="text"
+                                               value="{% if form.title.value %}{{ form.title.value }}{% else %}{{ post.title }}{% endif %}">
+                                    </div>
+                                    {% for error in form.title.errors %}
+                                    <div class="s-input-message mt4" style="color: #c02d2e">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                             </div>
                             <div class="post-editor mt0 mb16">
@@ -38,9 +47,13 @@
                                     </label>
                                     <div class="wmd-container mb8">
                                         <div class="ps-relative">
-                                            <textarea class="wmd-input s-input bar0" name="content">{% block content_text %}{% endblock %}
-                                            </textarea>
+                                            <textarea class="wmd-input s-input bar0"
+                                                      id="id_content"
+                                                      name="content">{% if form.content.value %}{{ form.content.value }}{% else %}{{ post.content }}{% endif %}</textarea>
                                         </div>
+                                        {% for error in form.content.errors %}
+                                         <div class="s-input-message mt4" style="color: #c02d2e">{{ error }}</div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                                 <div class="ps-relative">
@@ -51,8 +64,13 @@
                                     </label>
                                     <div class="wmd-container mb8">
                                         <div class="ps-relative">
-                                            <textarea class="wmd-input s-input bar0" name="content_code">{% block content_code_text %}{% endblock %}</textarea>
+                                            <textarea class="wmd-input s-input bar0"
+                                                      id="id_content_code"
+                                                      name="content_code">{% if form.content_code.value %}{{ form.content_code.value }}{% else %}{{ post.content_code }}{% endif %}</textarea>
                                         </div>
+                                        {% for error in form.content_code.errors %}
+                                         <div class="s-input-message mt4" style="color: #c02d2e">{{ error }}</div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
@@ -70,19 +88,19 @@
                                         <div class="ps-relative">
                                             <div class="grid fw-wrap">
                                                 <div class="grid--cell fl1">
-                                                    {% block input_tags %}{% endblock %} 
+                                                    <input class="s-input box-border"
+                                                           name="tags"
+                                                           placeholder="например, #python #django"
+                                                           type="text"
+                                                           value="{% if form.tags.value %}{{ form.tags.value }}{% else %}{{ tags }}{% endif %}">
                                                 </div>
                                             </div>
+                                            {% for error in form.tags.errors %}
+                                            <div class="s-input-message mt4" style="color: #c02d2e">{{ error }}</div>
+                                            {% endfor %}
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div style="margin-top:10px">
-                                {% for field, errors in form.errors.items %}
-                                    {% for error in errors %}
-                                <p style="color: red">{{ field }}: {{ error }}</p>
-                                    {% endfor %}
-                                {% endfor %}
                             </div>
                         </div>
                     </div>

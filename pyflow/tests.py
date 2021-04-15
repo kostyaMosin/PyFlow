@@ -620,8 +620,8 @@ class ViewTestCase(TestCase):
                                                                      'topic': topic})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(mail.outbox), 0)
-        self.assertIn('send_form', response.context)
-        self.assertIsInstance(response.context['send_form'], SendEmailForm)
+        self.assertIn('form', response.context)
+        self.assertIsInstance(response.context['form'], SendEmailForm)
         self.assertIn('post', response.context)
         self.assertIsInstance(response.context['post'], Post)
 

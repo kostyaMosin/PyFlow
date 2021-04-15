@@ -19,12 +19,26 @@
                         <div class="grid fd-column gs4 gsy">
                             <label class="grid--cell s-label">Получатель</label>
                             <div class="grid ps-relative">
-                                <input class="grid--cell s-input" id="id_receiver" type="email" name="receiver">
+                                <input class="grid--cell s-input"
+                                       id="id_receiver"
+                                       type="email"
+                                       name="receiver"
+                                       value="{% if form.receiver.value %}{{ form.receiver.value }}{% endif %}">
                             </div>
+                            {% for error in form.receiver.errors %}
+                            <div class="s-input-message mt4" style="color: #c02d2e">{{ error }}</div>
+                            {% endfor %}
                         </div>
                         <div class="grid fd-column-reverse gs4 gsy">
+                            {% for error in form.topic.errors %}
+                            <div class="s-input-message mt4" style="color: #c02d2e">{{ error }}</div>
+                            {% endfor %}
                             <div class="grid ps-relative">
-                                <input class="grid--cell s-input" type="text" name="topic" id="id_topic">
+                                <input class="grid--cell s-input"
+                                       type="text"
+                                       name="topic"
+                                       id="id_topic"
+                                       value="{% if form.topic.value %}{{ form.topic.value }}{% endif %}">
                             </div>
                             <div class="grid ai-center ps-relative jc-space-between">
                                 <label class="grid--cell s-label">Тема</label>

@@ -157,7 +157,13 @@
                             <div>
                                 <form action="{% url 'detail' post.pk %}" class="grid--cell fl-grow1 px12"
                                       method="post">{% csrf_token %}
-                                    <textarea class="s-textarea" name="comment" style="margin-top: 10px"></textarea>
+                                    <textarea class="s-textarea"
+                                              name="comment"
+                                              placeholder="Оставте свой комментарий..."
+                                              style="margin-top: 10px">{% if form.comment.value %}{{ form.comment.value }}{% endif %}</textarea>
+                                    {% for error in errors %}
+                                    <div class="s-input-message mt4" style="color: #c02d2e">{{ error }}</div>
+                                    {% endfor %}
                                     <input class="ws-nowrap s-btn s-btn__primary" type="submit" value="Add comment">
                                 </form>
                             </div>

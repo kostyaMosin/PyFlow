@@ -73,6 +73,8 @@ def view_detail(request, pk):
             'posts_by_tags': posts.filter(tags=post.tags.all().first()),
             'liked_post_by_user': False,
         }
+        if comment_error := request.session.get('errors'):
+            context['errors'] = comment_error['comment']
         if request.user.is_authenticated:
             user = request.user
             if post.likes.filter(user=user):
@@ -92,8 +94,8 @@ def view_detail(request, pk):
                 comment = cd['comment']
                 Comment.objects.create(comment=comment, post=post, user=request.user)
                 return redirect('detail', post.pk)
-            else:
-                return redirect('detail', post.pk)
+            request.session['errors'] = form.errors
+            return redirect('detail', post.pk)
         return redirect('login')
 
 
@@ -119,11 +121,8 @@ def view_create_post(request):
                 post.tags.set(tags_creator(cd['tags']))
                 post.save()
                 return redirect('detail', post.pk)
-            else:
-                context = {
-                    'form': form,
-                }
-                return render(request, 'create.html', context)
+            context = {'form': form}
+            return render(request, 'create.html', context)
     return redirect('login')
 
 
@@ -159,11 +158,12 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
 def view_edit_delete_post(request, pk):
     if request.user.is_authenticated:
         post = get_object_or_404(Post, id=pk)
+        tags = tags_to_string(post.tags.all())
         if request.method == 'GET':
             context = {
                 'form': PostForm(),
                 'post': post,
-                'tags': tags_to_string(post.tags.all()),
+                'tags': tags,
             }
             return render(request, 'edit.html', context)
         if request.method == 'POST':
@@ -180,13 +180,12 @@ def view_edit_delete_post(request, pk):
                     post.tags.set(tags_creator(cd['tags']))
                     post.save()
                     return redirect('detail', post.pk)
-                else:
-                    context = {
-                        'form': PostForm(),
-                        'post': post,
-                        'tags': tags_to_string(post.tags.all())
-                    }
-                    return render(request, 'edit.html', context)
+                context = {
+                    'form': form,
+                    'post': post,
+                    'tags': tags
+                }
+                return render(request, 'edit.html', context)
     return redirect('login')
 
 
@@ -210,7 +209,7 @@ def view_send_post_by_email(request, pk):
                 'post': post
             }
             return render(request, 'send_post.html', context)
-        else:
+        if request.method == 'POST':
             form = SendEmailForm(request.POST)
             if form.is_valid():
                 cd = form.cleaned_data
@@ -225,13 +224,12 @@ def view_send_post_by_email(request, pk):
                     recipient_list=[cd['receiver']],
                     fail_silently=False,
                 )
-            else:
-                context = {
-                    'send_form': form,
-                    'post': post
-                }
-                return render(request, 'send_post.html', context)
-        return redirect('detail', pk)
+                return redirect('detail', pk)
+            context = {
+                'form': form,
+                'post': post
+            }
+            return render(request, 'send_post.html', context)
     return redirect('login')
 
 

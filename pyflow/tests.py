@@ -119,6 +119,10 @@ class ViewTestCase(TestCase):
         self.assertEqual(tag_1.posts.count(), 2)
         self.assertEqual(tag_2.posts.count(), 2)
 
+    def test_view_sort_by_tag_404(self):
+        response = self.client.get('/post/tag/33', {'pk': 33})
+        self.assertEqual(response.status_code, 404)
+
     def test_view_sort_by_date_week(self):
         self.post_1.create_at = dt.now(tz=pytz.UTC) - timedelta(29)
         self.post_2.create_at = dt.now(tz=pytz.UTC) - timedelta(6)
@@ -290,6 +294,10 @@ class ViewTestCase(TestCase):
         self.assertEqual(self.post_2.shows.count(), 2)
         self.assertEqual(self.post_2.shows.all()[1].user, self.user_2)
 
+    def test_view_detail_404(self):
+        response = self.client.get('/post/33', {'pk': 33})
+        self.assertEqual(response.status_code, 404)
+
     def test_detail_view_post(self):
         self.client.force_login(self.user_1)
         self.assertEqual(self.post_1.comments.count(), 2)
@@ -418,6 +426,13 @@ class ViewTestCase(TestCase):
         self.assertEqual(comment_1_in.comment, self.comment_1.comment)
         self.assertEqual(comment_1_out.comment, self.comment_1.comment)
 
+    def test_add_like_or_dislike_value_with_obj_type_comment_404(self):
+        self.client.force_login(self.user_1)
+        response = self.client.post('/rating/comment/33', {'obj_type': 'comment',
+                                                            'pk': 33,
+                                                            'button': 'like'})
+        self.assertEqual(response.status_code, 404)
+
     def test_add_like_value_post_method_with_obj_type_post(self):
         user_3 = User.objects.create_user(username='user3')
         self.client.force_login(user_3)
@@ -461,6 +476,13 @@ class ViewTestCase(TestCase):
         self.assertEqual(post_1_out.likes.all()[2].user, user_3)
         self.assertEqual(post_1_in.title, self.post_1.title)
         self.assertEqual(post_1_out.title, self.post_1.title)
+
+    def test_add_like_or_dislike_value_with_obj_type_post_404(self):
+        self.client.force_login(self.user_1)
+        response = self.client.post('/rating/post/33', {'obj_type': 'post',
+                                                         'pk': 33,
+                                                         'button': 'like'})
+        self.assertEqual(response.status_code, 404)
 
     def test_edit_delete_post_view_get_method_user_is_not_auth(self):
         response = self.client.get('/post/edit/1', {'pk': self.post_1.pk})
@@ -547,6 +569,15 @@ class ViewTestCase(TestCase):
         tags = response.context['tags']
         self.assertEqual(tags, tags_to_string(self.post_1.tags.all()))
 
+    def test_edit_or_delete_post_view_404(self):
+        self.client.force_login(self.user_1)
+        response = self.client.post('/post/edit/33', {'pk': 33,
+                                                       'button': 'save',
+                                                       'content': 'content',
+                                                       'content_code': 'content_code',
+                                                       'tags': 'tags'})
+        self.assertEqual(response.status_code, 404)
+
     def test_send_post_by_email_view_with_user_is_not_auth(self):
         response = self.client.get('/send_post/1', {'pk': 1})
         self.assertRedirects(response, '/accounts/login/', 302, fetch_redirect_response=False)
@@ -574,6 +605,13 @@ class ViewTestCase(TestCase):
         self.assertRedirects(response, f'/post/{self.post_1.pk}', 302, fetch_redirect_response=False)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, topic)
+
+    def test_send_post_by_email_view_404(self):
+        self.client.force_login(self.user_1)
+        response = self.client.post('/send_post/33', {'pk': 33,
+                                                      'receiver': 'receiver',
+                                                      'topic': 'topic'})
+        self.assertEqual(response.status_code, 404)
 
     def test_send_post_by_email_view_post_method_form_is_not_valid(self):
         self.client.force_login(self.user_1)
@@ -606,6 +644,11 @@ class ViewTestCase(TestCase):
         self.assertIn('comments', response.context)
         comments = response.context['comments']
         self.assertNotIn(self.comment_1, comments)
+
+    def test_delete_comment_404(self):
+        self.client.force_login(self.user_1)
+        response = self.client.post(f'/comment/delete/33', {'pk': 33})
+        self.assertEqual(response.status_code, 404)
 
     def test_search_posts_view_get(self):
         kw_1 = self.post_1.title

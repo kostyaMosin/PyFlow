@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
 from django.db.models import Sum, Count, F, Q
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from datetime import datetime as dt, timedelta
 import pytz
 
@@ -24,7 +24,7 @@ def view_main(request):
 
 
 def view_sort_by_tag(request, pk):
-    tag = Tag.objects.get(id=pk)
+    tag = get_object_or_404(Tag, id=pk)
     posts = Post.objects.filter(tags=tag)
     tags = Tag.objects.filter()
     context = {
@@ -55,8 +55,8 @@ def view_sort_by_date(request):
 
 
 def view_detail(request, pk):
+    post = get_object_or_404(Post, id=pk)
     if request.method == 'GET':
-        post = Post.objects.get(id=pk)
         comments = post.comments
         rating = post.likes.aggregate(Sum('value'))['value__sum']
         posts = Post.objects.exclude(id=post.pk).filter()
@@ -86,7 +86,6 @@ def view_detail(request, pk):
         return render(request, 'detail.html', context)
     if request.method == 'POST':
         if request.user.is_authenticated:
-            post = Post.objects.get(id=pk)
             form = CommentForm(request.POST)
             if form.is_valid():
                 cd = form.cleaned_data
@@ -136,7 +135,7 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
             button = request.POST['button']
             value = 1 if button == 'like' else -1
             if obj_type == 'comment':
-                comment = Comment.objects.get(id=pk)
+                comment = get_object_or_404(Comment, id=pk)
                 data = {
                     'value': value,
                     'comment': comment,
@@ -147,7 +146,7 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
             if obj_type == 'post':
                 data = {
                     'value': value,
-                    'post': Post.objects.get(id=post_pk),
+                    'post': get_object_or_404(Post, id=post_pk),
                     'user': user,
                 }
                 PostLike.objects.create(**data)
@@ -159,8 +158,8 @@ def view_add_like_or_dislike_value(request, obj_type, pk):
 
 def view_edit_delete_post(request, pk):
     if request.user.is_authenticated:
+        post = get_object_or_404(Post, id=pk)
         if request.method == 'GET':
-            post = Post.objects.get(id=pk)
             context = {
                 'form': PostForm(),
                 'post': post,
@@ -169,12 +168,10 @@ def view_edit_delete_post(request, pk):
             return render(request, 'edit.html', context)
         if request.method == 'POST':
             if request.POST['button'] == 'delete':
-                post = Post.objects.get(id=pk)
                 post.delete()
                 return redirect('index')
             if request.POST['button'] == 'save':
                 form = PostForm(request.POST)
-                post = Post.objects.get(id=pk)
                 if form.is_valid():
                     cd = form.cleaned_data
                     post.title = cd['title']
@@ -186,7 +183,7 @@ def view_edit_delete_post(request, pk):
                 else:
                     context = {
                         'form': PostForm(),
-                        'post': Post.objects.get(id=pk),
+                        'post': post,
                         'tags': tags_to_string(post.tags.all())
                     }
                     return render(request, 'edit.html', context)
@@ -196,7 +193,7 @@ def view_edit_delete_post(request, pk):
 def view_delete_comment(request, pk):
     if request.user.is_authenticated:
         if request.method == 'POST':
-            comment = Comment.objects.get(id=pk)
+            comment = get_object_or_404(Comment, id=pk)
             post_pk = comment.post.pk
             comment.delete()
             return redirect('detail', post_pk)
@@ -206,11 +203,11 @@ def view_delete_comment(request, pk):
 
 def view_send_post_by_email(request, pk):
     if request.user.is_authenticated:
-        post = Post.objects.get(id=pk)
+        post = get_object_or_404(Post, id=pk)
         if request.method == 'GET':
             context = {
                 'send_form': SendEmailForm(),
-                'post': Post.objects.get(id=pk)
+                'post': post
             }
             return render(request, 'send_post.html', context)
         else:

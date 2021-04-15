@@ -319,9 +319,13 @@ class ViewTestCase(TestCase):
 
     def test_detail_view_post_form_is_not_valid(self):
         self.client.force_login(self.user_1)
-        comment = 'hello'
-        response = self.client.post(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk, 'comment': comment})
+        response = self.client.post(f'/post/{self.post_1.pk}', {'pk': self.post_1.pk})
         self.assertRedirects(response, f'/post/{self.post_1.pk}', 302, fetch_redirect_response=False)
+        session = self.client.session
+        errors = session.get('errors')['comment']
+        self.assertEqual(errors[0], 'This field is empty')
+        post = Post.objects.get(id=self.post_1.pk)
+        self.assertEqual(self.post_1.comments.count(), post.comments.count())
 
     def test_create_post_view_get(self):
         self.client.force_login(self.user_1)
@@ -359,18 +363,79 @@ class ViewTestCase(TestCase):
         self.assertIsInstance(tag, Tag)
         self.assertEqual(tag.title, tags_creator(tags)[0].title)
 
-    def test_create_post_view_post_form_is_not_valid(self):
+    def test_create_post_view_post_title_is_not_valid(self):
         self.client.force_login(self.user_1)
-        title = 'title 3'
         content = 'content 3'
         content_code = 'content code 3'
+        tags = '#tag'
+        posts_in = Post.objects.all()
+        response = self.client.post('/post/create/', {'content': content,
+                                                      'content_code': content_code,
+                                                      'tags': tags,
+                                                      'user': self.user_1})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'create.html')
+        self.assertIn('form', response.context)
+        self.assertFormError(response, 'form', 'title', 'This field is empty')
+        posts_out = Post.objects.all()
+        self.assertEqual(posts_in.count(), posts_out.count())
+
+    def test_create_post_view_post_content_is_not_valid(self):
+        self.client.force_login(self.user_1)
+        title = 'title3'
+        content_code = 'content code 3'
+        tags = '#tag'
+        posts_in = Post.objects.all()
+        response = self.client.post('/post/create/', {'title': title,
+                                                      'content_code': content_code,
+                                                      'tags': tags,
+                                                      'user': self.user_1})
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', 'content', 'This field is empty')
+        posts_out = Post.objects.all()
+        self.assertEqual(posts_in.count(), posts_out.count())
+
+    def test_create_post_view_post_content_code_is_not_valid(self):
+        self.client.force_login(self.user_1)
+        title = 'title3'
+        content = 'content 3'
+        tags = '#tag'
+        posts_in = Post.objects.all()
+        response = self.client.post('/post/create/', {'title': title,
+                                                      'content': content,
+                                                      'tags': tags,
+                                                      'user': self.user_1})
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', 'content_code', 'This field is empty')
+        posts_out = Post.objects.all()
+        self.assertEqual(posts_in.count(), posts_out.count())
+
+    def test_create_post_view_post_tags_is_not_valid(self):
+        self.client.force_login(self.user_1)
+        title = 'title3'
+        content = 'content 3'
+        content_code = 'content_code 3'
+        posts_in = Post.objects.all()
         response = self.client.post('/post/create/', {'title': title,
                                                       'content': content,
                                                       'content_code': content_code,
                                                       'user': self.user_1})
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'create.html')
-        self.assertIn('form', response.context)
+        self.assertFormError(response, 'form', 'tags', 'This field is empty')
+        posts_out = Post.objects.all()
+        self.assertEqual(posts_in.count(), posts_out.count())
+
+    def test_create_post_view_post_all_field_is_not_valid(self):
+        self.client.force_login(self.user_1)
+        posts_in = Post.objects.all()
+        response = self.client.post('/post/create/')
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', 'title', 'This field is empty')
+        self.assertFormError(response, 'form', 'content', 'This field is empty')
+        self.assertFormError(response, 'form', 'content_code', 'This field is empty')
+        self.assertFormError(response, 'form', 'tags', 'This field is empty')
+        posts_out = Post.objects.all()
+        self.assertEqual(posts_in.count(), posts_out.count())
 
     def test_add_like_or_dislike_value_post_method_user_is_not_auth(self):
         response = self.client.post(f'/rating/post/{self.post_1.pk}', {'obj_type': 'post',
@@ -549,17 +614,15 @@ class ViewTestCase(TestCase):
 
     def test_edit_post_view_post_method_form_is_not_valid(self):
         self.client.force_login(self.user_1)
-        content = 'content'
-        content_code = 'content_code'
-        tags = '#tag3'
         response = self.client.post(f'/post/edit/{self.post_1.pk}', {'pk': self.post_1.pk,
-                                                                     'button': 'save',
-                                                                     'content': content,
-                                                                     'content_code': content_code,
-                                                                     'tags': tags})
+                                                                     'button': 'save'})
         self.assertEqual(response.status_code, 200)
         self.assertIn('form', response.context)
         self.assertIsInstance(response.context['form'], PostForm)
+        self.assertFormError(response, 'form', 'title', 'This field is empty')
+        self.assertFormError(response, 'form', 'content', 'This field is empty')
+        self.assertFormError(response, 'form', 'content_code', 'This field is empty')
+        self.assertFormError(response, 'form', 'tags', 'This field is empty')
         post_1 = response.context['post']
         self.assertIsInstance(post_1, Post)
         self.assertEqual(post_1.title, self.post_1.title)
@@ -613,17 +676,32 @@ class ViewTestCase(TestCase):
                                                       'topic': 'topic'})
         self.assertEqual(response.status_code, 404)
 
-    def test_send_post_by_email_view_post_method_form_is_not_valid(self):
+    def test_send_post_by_email_view_post_method_receiver_is_not_valid(self):
         self.client.force_login(self.user_1)
         topic = 'topic'
         response = self.client.post(f'/send_post/{self.post_1.pk}', {'pk': self.post_1.pk,
                                                                      'topic': topic})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(mail.outbox), 0)
+        self.assertTemplateUsed(response, 'send_post.html')
         self.assertIn('form', response.context)
         self.assertIsInstance(response.context['form'], SendEmailForm)
+        self.assertFormError(response, 'form', 'receiver', 'This field is empty')
         self.assertIn('post', response.context)
-        self.assertIsInstance(response.context['post'], Post)
+        post = response.context['post']
+        self.assertIsInstance(post, Post)
+        self.assertEqual(post.title, self.post_1.title)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_send_post_by_email_view_post_method_topic_is_not_valid(self):
+        self.client.force_login(self.user_1)
+        receiver = 'from@example.com'
+        response = self.client.post(f'/send_post/{self.post_1.pk}', {'pk': self.post_1.pk,
+                                                                     'receiver': receiver})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'send_post.html')
+        self.assertIn('form', response.context)
+        self.assertFormError(response, 'form', 'topic', 'This field is empty')
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_delete_comment_with_user_is_not_auth(self):
         response = self.client.post('/comment/delete/1', {'pk': 1})

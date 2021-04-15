@@ -74,7 +74,7 @@
                                 </div>
                                 <div class="started">
                                     <a class="started-link" href="{% url 'detail' post.pk %}">задан <span class="relativetime">{{ post.create_at }}</span></a>
-                                    <a href="">{{ post.user.username }}</a>
+                                    <a href="{% url 'profile' %}">{{ post.user.username }}</a>
                                 </div>
                             </div>
                         </div>

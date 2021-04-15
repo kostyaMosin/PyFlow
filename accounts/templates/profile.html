@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %} PyFlow {% endblock%}
+
+{% block body %}
+<body class="user-page unified-theme">
+{% endblock%}
+
+{% block content %}
+{% if user.is_authenticated %}
+<div id="content" class="snippet-hidden">
+    <div id="mainbar-full" class="user-show-new">
+        <div class="grid ai-center jc-space-between mb16">
+            <div class="grid--cell ml-auto">
+                <div class="ml12 grid ai-center">
+                    <div class="grid--cell ws-nowrap fs-body3" style="font-weight: bold">{{ user.username }}</div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div id="user-panel-answers" class="user-panel">
+                <div class="grid ai-center jc-space-between bb bc-black-100 pb4 h32 mb8">
+                    <h3 class="grid--cell mb0 mr-auto px2 profile-section-title">
+                        Посты <span>({{ posts.count }})</span></h3>
+                </div>
+                <div class="user-panel-content">
+                    {% if posts %}
+                    {% for post in posts %}
+                    <p><a href="{% url 'detail' post.pk %}">{{ post.title }}</a></p>
+                    {% endfor %}
+                    {% else %}
+                    <div class="empty">Вы не <a href="{% url 'create-post' %}">опубликовали</a> ни одного поста</div>
+                    {% endif %}
+                </div>
+                <div class="user-panel-footer">
+                </div>
+            </div>
+            <div id="user-panel-reputation" class="user-panel">
+                <div class="grid ai-center jc-space-between bb bc-black-100 pb4 h32 mb8">
+                    <h3 class="grid--cell mb0 mr-auto px2 profile-section-title">
+                        &#x420;&#x435;&#x43F;&#x443;&#x442;&#x430;&#x446;&#x438;&#x44F; <span>({{ reputation }})</span>
+                    </h3>
+                </div>
+                <div class="user-panel-content">
+                    {% if posts_shows %}
+                    <p>Просмотры ваших постов &times; {{ posts_shows }}</p>
+                    <p>Суммарный рейтинг ваших постов &times; {{ posts_likes }}</p>
+                    <p>Суммарный рейтинг ваших комментариев &times; {{ comments_likes }}</p>
+                    {% else %}
+                    <div class="empty">Нет данных для подсчета репутации</div>
+                    {% endif %}
+                </div>
+                <div class="user-panel-footer">
+                </div>
+            </div>
+            <div id="user-panel-questions" class="user-panel">
+                <div class="grid ai-center jc-space-between bb bc-black-100 pb4 h32 mb8">
+                    <h3 class="grid--cell mb0 mr-auto px2 profile-section-title">
+                        Комментарии <span>({{ comments.count }})</span>
+                    </h3>
+                </div>
+                <div class="user-panel-content">
+                    {% if comments %}
+                    {% for comment in comments %}
+                    <p><a href="{% url 'detail' comment.post.pk %}">{{ comment.post.title }}</a></p>
+                    {% endfor %}
+                    {% else %}
+                    <div class="empty">Вы не <a href="{% url 'index' %}">оставили</a> ни одного комментария</div>
+                    {% endif %}
+                </div>
+                <div class="user-panel-footer">
+                </div>
+            </div>
+            <div id="user-panel-tags" class="user-panel">
+                <div class="grid ai-center jc-space-between bb bc-black-100 pb4 h32 mb8">
+                    <h3 class="grid--cell mb0 mr-auto px2 profile-section-title">
+                        Метки <span>({{ tags.count }})</span>
+                    </h3>
+                </div>
+                <div class="user-panel-content">
+                    {% if tags %}
+                    {% for tag in tags %}
+                    <a class="post-tag" href="{% url 'post-by-tag' tag.pk %}">{{ tag.title }}</a>&nbsp;<span class="item-multiplier"><span
+                        class="item-multiplier-x">&times;</span>&nbsp;<span
+                        class="item-multiplier-count">{{ tag.posts_count }}</span> </span>
+                    {% endfor %}
+                    {% else %}
+                    <div class="empty">У вас ещё нет сообщений ни по одной метке</div>
+                    {% endif %}
+                </div>
+                <div class="user-panel-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

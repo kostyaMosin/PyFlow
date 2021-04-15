@@ -26,7 +26,7 @@
               <ol class="overflow-x-auto ml-auto -secondary grid ai-center list-reset h100 user-logged-out">
                 {% if user.is_authenticated %}
                   <li class="-item">
-                    <a href="" class="my-profile">{{ user.username }}</a>
+                    <a href="{% url 'profile' %}" class="my-profile">{{ user.username }}</a>
                   </li>
                   <li class="-ctas">
                     <a href="{% url 'logout' %}" class="login-link s-btn s-btn__filled py8">Выход</a>

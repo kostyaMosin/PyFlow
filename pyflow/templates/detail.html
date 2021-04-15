@@ -92,7 +92,7 @@
                                             <div class="user-action-time">Create at <span class="relativetime">{{ post.create_at }}</span>
                                             </div>
                                             <div class="user-details">
-                                                <a href="">{{ post.user.username }}</a>
+                                                <a href="{% url 'profile' %}">{{ post.user.username }}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -135,7 +135,7 @@
                                         <div class="comment-text">
                                             <div class="comment-body">
                                                 <span class="comment-copy">{{ comment.comment }}</span> - <a
-                                                    class="comment-user" title="">{{ comment.user }}</a>
+                                                    class="comment-user" href="{% url 'profile' %}">{{ comment.user }}</a>
                                                 <span class="comment-date" dir="ltr"><span class="relativetime-clean">{{ comment.create_at }}</span></span>
                                                 {% if user == comment.user %}
                                                 <form method="post" action="{% url 'delete-comment' comment.pk %}">{% csrf_token %}

@@ -45,7 +45,7 @@ def view_sort_by_date(request):
             time = time - timedelta(30)
         posts_sorted = posts.filter(create_at__gt=time).annotate(rating=Sum(F('likes__value'))).order_by('-create_at')
         if button == 'top':
-            posts_sorted = posts.annotate(rating=Sum(F('likes__value'))).order_by('-rating')
+            posts_sorted = posts.annotate(rating=Sum(F('likes__value'))).order_by(F('rating').desc())
         tags = Tag.objects.filter()
         context = {
             'posts': posts_sorted,

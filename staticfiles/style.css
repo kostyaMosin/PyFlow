@@ -1,0 +1,23 @@
+.add-comment {
+    margin-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+}
+.add-comment input[type="submit"] {
+    float: right;
+}
+.s-textarea-small {
+    float: left;
+    width: 500px;
+    height: 200px;
+    margin: 0;
+    padding: 7.8px 9.1px 7.8px 32px;
+    border: 1px solid #bbc0c4;
+    border-radius: 3px;
+    background-color: #fff;
+    color: #0c0d0e;
+    font-size: 13px;
+    font-family: inherit;
+    line-height: 1.15384615;
+}

@@ -70,7 +70,7 @@ def view_detail(request, pk):
             'post_rating': rating if rating else 0,
             'comments': comments.annotate(rating=Sum(F('likes__value'))).order_by('create_at'),
             'form': CommentForm(),
-            'posts_by_tags': posts.filter(tags=post.tags.all().first()),
+            'posts_by_tags': posts,
             'liked_post_by_user': False,
         }
         if comment_error := request.session.get('errors'):

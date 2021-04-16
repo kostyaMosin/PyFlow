@@ -35,5 +35,13 @@ def view_user_profile(request):
             'posts_likes': posts_likes,
             'comments_likes': comments_likes,
         }
+
+        posts_comment_by_user = []
+
+        for post in Post.objects.all():
+            if user_comments := post.comments.filter(user=user):
+                posts_comment_by_user.append({'post': post, 'user_comments': user_comments})
+
+        context['posts_comment_by_user'] = posts_comment_by_user
         return render(request, 'profile.html', context)
     return redirect('login')

@@ -13,8 +13,7 @@
         </div>
         <div class="grid ai-start jc-space-between">
             <div class="grid--cell fl1 wmn0">
-                <form action="{% block form_action %}{% endblock %}" class="post-form" id="post-form" method="post">
-                    {% csrf_token %}
+                <form action="{% block form_action %}{% endblock %}" class="post-form" id="post-form" method="post">{% csrf_token %}
                     <div id="question-form">
                         <div class="bg-white bar-sm bs-md p16 ba bc-black-100">
                             <div class="ps-relative mb16" id="post-title">

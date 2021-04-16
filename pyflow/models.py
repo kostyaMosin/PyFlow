@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Post(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=255)
     content = models.TextField()
     content_code = models.TextField(blank=True)
     tags = models.ManyToManyField('Tag', related_name='posts')

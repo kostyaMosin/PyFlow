@@ -56,11 +56,12 @@ def view_sort_by_date(request):
 
 def view_detail(request, pk):
     post = get_object_or_404(Post, id=pk)
+    tags = post.tags.all()
     if request.method == 'GET':
         comments = post.comments
         rating = post.likes.aggregate(Sum('value'))['value__sum']
-        posts = Post.objects.exclude(id=post.pk).filter()
-        for tag in post.tags.all():
+        posts = Post.objects.exclude(id=post.pk).filter(tags=tags.first())
+        for tag in tags:
             if posts_sort := posts.filter(tags=tag):
                 posts = posts_sort
             else:

@@ -1,5 +1,6 @@
 Django
 gunicorn
 django-heroku
+django-extensions
 python-dotenv
 pytz

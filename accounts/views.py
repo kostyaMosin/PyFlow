@@ -25,18 +25,24 @@ def view_user_profile(request):
         posts_shows = posts_shows if posts_shows else 0
         comments_likes = comments.aggregate(likes=Sum(F('likes__value')))['likes']
         comments_likes = comments_likes if comments_likes else 0
-        posts_comment_by_user = Post.objects.filter(user=user).annotate(comments_count=Count(F('comments'))).order_by(
-            '-comments_count')
         context = {
             'user': user,
             'posts': posts.order_by('-create_at'),
             'comments': comments,
-            'posts_comment_by_user': posts_comment_by_user,
             'tags': tags,
             'reputation': sum([posts_likes, posts_shows, comments_likes]),
             'posts_shows': posts_shows,
             'posts_likes': posts_likes,
             'comments_likes': comments_likes,
         }
+
+        posts_comment_by_user = []
+
+        for post in Post.objects.all():
+            if user_comments := post.comments.filter(user=user):
+                posts_comment_by_user.append({'post': post, 'user_comments': user_comments})
+
+        context['posts_comment_by_user'] = posts_comment_by_user
+
         return render(request, 'profile.html', context)
     return redirect('login')

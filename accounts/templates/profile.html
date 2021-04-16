@@ -60,9 +60,11 @@
                     </h3>
                 </div>
                 <div class="user-panel-content">
-                    {% if comments %}
-                    {% for comment in comments %}
-                    <p><a href="{% url 'detail' comment.post.pk %}">{{ comment.post.title }}</a></p>
+                    {% if posts_comment_by_user %}
+                    {% for post in posts_comment_by_user %}
+                    <p><a href="{% url 'detail' post.pk %}">{{ post.title }}</a> <span class="item-multiplier"><span
+                        class="item-multiplier-x">&times;</span>&nbsp;<span
+                        class="item-multiplier-count">{{ post.comments_count }}</span> </span></p>
                     {% endfor %}
                     {% else %}
                     <div class="empty">Вы не <a href="{% url 'index' %}">оставили</a> ни одного комментария</div>

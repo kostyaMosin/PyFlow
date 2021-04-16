@@ -229,7 +229,7 @@ class ViewTestCase(TestCase):
         self.assertEqual(comment_2.create_at, self.comment_2.create_at)
         self.assertEqual(comment_1.rating, 1)
         self.assertEqual(comment_2.rating, None)
-        self.assertEqual(list(comments), [self.comment_2, self.comment_1])
+        self.assertEqual(list(comments), [self.comment_1, self.comment_2])
         self.assertIn('form', response.context)
         self.assertIsInstance(response.context['form'], CommentForm)
         self.assertIn('posts_by_tags', response.context)
@@ -309,7 +309,8 @@ class ViewTestCase(TestCase):
         post_1 = response.context['post']
         self.assertEqual(post_1.comments.count(), 3)
         comments = response.context['comments']
-        self.assertEqual(comments[0].comment, comment)
+        self.assertNotEqual(comments[0].comment, comment)
+        self.assertEqual(comments[2].comment, comment)
         self.assertEqual(comments[0].user, self.user_1)
 
     def test_detail_view_post_user_is_not_auth(self):

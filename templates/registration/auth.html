@@ -7,25 +7,25 @@
 {% endblock%}
 
 {% block content %}
-    <div id="content" class="grid grid__center snippet-hidden">
+    <div id="content" class="d-flex flex__center snippet-hidden">
         <div>
-            <div class="grid--cell">
+            <div class="flex--item">
                 <div class="ta-center fs-title mx-auto mb24">
 
                     {% block center %}{% endblock %}
                 
                 </div>
                 <div class="mx-auto mb24 p24 wmx3 bg-white bar-lg auth-shadow mb24" id="formContainer">
-                    <form class="grid fd-column gs12 gsy" method="post">{% csrf_token %}
-                        <div class="grid fd-column gs4 gsy">
-                            <label class="grid--cell s-label">{% block label_name %}{% endblock %}</label>
-                            <div class="grid ps-relative">
-                                <input class="grid--cell s-input" id="id_username" name="username" type="text">
+                    <form class="d-flex fd-column gs12 gsy" method="post">{% csrf_token %}
+                        <div class="d-flex fd-column gs4 gsy">
+                            <label class="flex--item s-label">{% block label_name %}{% endblock %}</label>
+                            <div class="d-flex ps-relative">
+                                <input class="flex--item s-input" id="id_username" name="username" type="text">
                             </div>
                         </div>
                         {% block password %}{% endblock %}
-                        <div class="grid gs4 gsy fd-column">
-                            <button class="grid--cell s-btn s-btn__primary" id="submit-button" name="submit-button" type="submit">
+                        <div class="d-flex gs4 gsy fd-column">
+                            <button class="flex--item s-btn s-btn__primary" id="submit-button" name="submit-button" type="submit">
                                 {% block button %}{% endblock %}
                             </button>
                         </div>

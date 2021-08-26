@@ -9,12 +9,12 @@
 {% endblock %}
 
 {% block password %}                        
-                        <div class="grid fd-column-reverse gs4 gsy">
-                            <div class="grid ps-relative">
-                                <input class="grid--cell s-input" type="password" autocomplete="off" name="password" id="id_password">
+                        <div class="d-flex fd-column-reverse gs4 gsy">
+                            <div class="d-flex ps-relative">
+                                <input class="flex--item s-input" type="password" autocomplete="off" name="password" id="id_password">
                             </div>
-                            <div class="grid ai-center ps-relative jc-space-between">
-                                <label class="grid--cell s-label">Пароль</label>
+                            <div class="d-flex ai-center ps-relative jc-space-between">
+                                <label class="flex--item s-label">Пароль</label>
 <!--                                <a class="grid&#45;&#45;cell s-link fs-caption" href="">Забыли пароль?</a>-->
                             </div>
                         </div>
@@ -22,4 +22,4 @@
                         
 {% block button %} Войти {% endblock %}                        
 
-{% block bottom_link %} Ещё нет учётной записи? <a href="{% url 'signup' %}">Зарегистрируйтесь</a>{% endblock %}                    
+{% block bottom_link %} Ещё нет учётной записи? <a href="{% url 'signup' %}">Зарегистрируйтесь</a>{% endblock %}

@@ -12,18 +12,18 @@
   </head>
   {% block body %}{% endblock %}
       <header class="top-bar _fixed">
-          <div class="wmx12 mx-auto grid ai-center h100">
-              <div class="-main grid--cell">
+          <div class="wmx12 mx-auto d-flex ai-center h100">
+              <div class="-main flex--item">
                 <a href="{% url 'index' %}" class="-logo -img" style="font-weight: bold; font-size: 25px">PyFlow</a>
               </div>
-              <form id="search" method="get" action="{% url 'search-posts' %}" class="grid--cell fl-grow1 searchbar px12">
+              <form id="search" method="get" action="{% url 'search-posts' %}" class="flex--item fl-grow1 searchbar px12">
                 <div class="ps-relative">
                     <input name="q" type="text" placeholder="Search..." class="s-input s-input__search">
                     <svg aria-hidden="true" class="s-input-icon s-input-icon__search svg-icon iconSearch" width="18" height="18" viewBox="0 0 18 18">
                         <path d="M18 16.5l-5.14-5.18h-.35a7 7 0 10-1.19 1.19v.35L16.5 18l1.5-1.5zM12 7A5 5 0 112 7a5 5 0 0110 0z"></path></svg>
                 </div>
               </form>
-              <ol class="overflow-x-auto ml-auto -secondary grid ai-center list-reset h100 user-logged-out">
+              <ol class="overflow-x-auto ml-auto -secondary d-flex ai-center list-reset h100 user-logged-out">
                 {% if user.is_authenticated %}
                   <li class="-item">
                     <a href="{% url 'profile' %}" class="my-profile">{{ user.username }}</a>

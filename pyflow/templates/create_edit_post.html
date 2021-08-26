@@ -8,20 +8,20 @@
 
 {% block content %}
     <div class="pt0 snippet-hidden" id="content">
-        <div class="grid ai-center py24 bg-no-repeat bg-right-bottom">
+        <div class="d-flex ai-center py24 bg-no-repeat bg-right-bottom">
             {% block headline %}{% endblock%}
         </div>
-        <div class="grid ai-start jc-space-between">
-            <div class="grid--cell fl1 wmn0">
+        <div class="d-flex ai-start jc-space-between">
+            <div class="flex--item fl1 wmn0">
                 <form action="{% block form_action %}{% endblock %}" class="post-form" id="post-form" method="post">{% csrf_token %}
                     <div id="question-form">
                         <div class="bg-white bar-sm bs-md p16 ba bc-black-100">
                             <div class="ps-relative mb16" id="post-title">
-                                <div class="grid fl1 fd-column">
+                                <div class="d-flex fl1 fd-column">
                                     <label class="d-block s-label mb4">
                                         Заголовок
-                                        <div class="grid">
-                                            <p class="s-description mt2 grid--cell9">Будьте конкретны. Представьте, что
+                                        <div class="d-flex">
+                                            <p class="s-description mt2 flex--item">Будьте конкретны. Представьте, что
                                                 вы задаёте вопрос другому человеку.</p>
                                         </div>
                                     </label>
@@ -76,8 +76,8 @@
                             <div class="ps-relative">
                                 <div class="ps-relative">
                                     <div class="form-item p0">
-                                        <div class="grid ai-center jc-space-between">
-                                            <label class="s-label mb4 d-block grid--cell fl1">
+                                        <div class="d-flex ai-center jc-space-between">
+                                            <label class="s-label mb4 d-block flex--item fl1">
                                                 Метки
                                                 <div class="s-description mt2">Добавьте не более 5 меток, описывающих, о
                                                     чём ваш вопрос
@@ -85,8 +85,8 @@
                                             </label>
                                         </div>
                                         <div class="ps-relative">
-                                            <div class="grid fw-wrap">
-                                                <div class="grid--cell fl1">
+                                            <div class="d-flex fw-wrap">
+                                                <div class="flex--item fl1">
                                                     <input class="s-input box-border"
                                                            name="tags"
                                                            placeholder="например, #python #django"

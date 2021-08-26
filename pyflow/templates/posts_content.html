@@ -9,9 +9,9 @@
 {% block content %}
     <div id="content">
         <div id="mainbar">
-            <div class="grid">
-                <h1 class="grid--cell fl1 fs-headline1"><a href="{% url 'index' %}">Posts</a></h1>
-                <div class="ml12 aside-cta grid--cell print:d-none">
+            <div class="d-flex">
+                <h1 class="flex--item fl1 fs-headline1"><a href="{% url 'index' %}">Posts</a></h1>
+                <div class="ml12 aside-cta flex--item print:d-none">
                     {% if user.is_authenticated %}
                     <a class="ws-nowrap s-btn s-btn__primary" href="{% url 'create-post' %}">Create Post</a>
                     {% else %}
@@ -19,13 +19,13 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="grid ai-end mb16 sm:fd-column">
-                <div class="grid--cell ml16 fl-shrink0">
-                    <div class=" grid s-btn-group">
+            <div class="d-flex ai-end mb16 sm:fd-column">
+                <div class="flex--item ml16 fl-shrink0">
+                    <div class="d-flex s-btn-group">
                         <form method="get" action="{% url 'post-by-date' %}">
-                            <button class="grid--cell s-btn s-btn__muted s-btn__outlined" name="button" value="top">Топ</button>
-                            <button class="grid--cell s-btn s-btn__muted s-btn__outlined" name="button" value="week">За неделю</button>
-                            <button class="grid--cell s-btn s-btn__muted s-btn__outlined" name="button" value="month">За месяц</button>
+                            <button class="flex--item s-btn s-btn__muted s-btn__outlined" name="button" value="top">Топ</button>
+                            <button class="flex--item s-btn s-btn__muted s-btn__outlined" name="button" value="week">За неделю</button>
+                            <button class="flex--item s-btn s-btn__muted s-btn__outlined" name="button" value="month">За месяц</button>
                         </form>
                     </div>
                 </div>

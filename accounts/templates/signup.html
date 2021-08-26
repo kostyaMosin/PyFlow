@@ -11,21 +11,21 @@
 {% endblock %}
 
 {% block password %}
-                        <div class="grid fd-column gs4 gsy">
-                            <label class="grid--cell s-label">Пароль</label>
-                            <div class="grid ps-relative">
+                        <div class="d-flex fd-column gs4 gsy">
+                            <label class="flex--item s-label">Пароль</label>
+                            <div class="d-flex ps-relative">
                                 <input class="s-input" id="id_password1" name="password1" type="password">
                             </div>
                         </div>
-                        <div class="grid fd-column-reverse gs4 gsy">
+                        <div class="d-flex fd-column-reverse gs4 gsy">
                             <p class="fs-caption fc-light mt4 mb4">Пароли должны содержать не менее восьми символов,
                                 включая как минимум 1 букву и 1 цифру.</p>
-                            <div class="grid ps-relative">
-                                <input autocomplete="off" class="grid--cell s-input" id="id_password2" name="password2"
+                            <div class="d-flex ps-relative">
+                                <input autocomplete="off" class="flex--item s-input" id="id_password2" name="password2"
                                        type="password">
                             </div>
-                            <div class="grid ai-center ps-relative jc-space-between">
-                                <label class="grid--cell s-label" for="id_password2">Подтверждение пароля</label>
+                            <div class="d-flex ai-center ps-relative jc-space-between">
+                                <label class="flex--item s-label" for="id_password2">Подтверждение пароля</label>
                             </div>
                         </div>
 {% endblock %}

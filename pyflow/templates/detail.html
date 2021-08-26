@@ -9,11 +9,11 @@
 {% block content %}
     <div id="content">
         <div class="inner-content clearfix">
-            <div class="grid sm:fd-column" id="question-header">
-                <h1 class="fs-headline1 ow-break-word mb8 grid--cell fl1" itemprop="name">
+            <div class="d-flex sm:fd-column" id="question-header">
+                <h1 class="fs-headline1 ow-break-word mb8 flex--item fl1" itemprop="name">
                     <a class="question-hyperlink" href="">{{ post.title }}</a>
                 </h1>
-                <div class="ml12 aside-cta grid--cell print:d-none sm:ml0 sm:mb12 sm:order-first sm:as-end">
+                <div class="ml12 aside-cta flex--item print:d-none sm:ml0 sm:mb12 sm:order-first sm:as-end">
                     {% if user.is_authenticated %}
                     <a class="ws-nowrap s-btn s-btn__primary" href="{% url 'create-post' %}">Create Post</a>
                     {% else %}
@@ -21,12 +21,12 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="grid fw-wrap pb8 mb16 bb bc-black-075">
-                <div class="grid--cell ws-nowrap mr16 mb8" title="2018-09-17 10:31:52Z">
+            <div class="d-flex fw-wrap pb8 mb16 bb bc-black-075">
+                <div class="flex--item ws-nowrap mr16 mb8" title="2018-09-17 10:31:52Z">
                     <span class="fc-light mr2">Post created</span>
                     <time datetime="2018-09-17T10:31:52" itemprop="dateCreated"> {{ post.create_at }}</time>
                 </div>
-                <div class="grid--cell ws-nowrap mb8" title="Просмотрен 373 раза">
+                <div class="flex--item ws-nowrap mb8" title="Просмотрен 373 раза">
                     <span class="fc-light mr2"> Viewed </span>
                     {{ post.shows.count }} times
                 </div>
@@ -35,20 +35,20 @@
                 <div class="question" data-ownerid="303574" data-questionid="882233" data-score="2" id="question">
                     <div class="post-layout">
                         <div class="votecell post-layout--left">
-                            <div class=" grid jc-center fd-column ai-stretch gs4 fc-black-200" data-post-id="882233">
+                            <div class="d-flex jc-center fd-column ai-stretch gs4 fc-black-200" data-post-id="882233">
                                 <form method="post" action="{% url 'rating' obj_type='post' pk=post.pk %}">{% csrf_token %}
                                     {% if user.is_authenticated %}
                                         {% if not liked_post_by_user %}
-                                    <button class="grid--cell s-btn s-btn__unset c-pointer" value="like" name="button">
+                                    <button class="flex--item s-btn s-btn__unset c-pointer" value="like" name="button">
                                         <svg aria-hidden="true" class="m0 svg-icon iconArrowUpLg" height="36" viewBox="0 0 36 36"
                                              width="36"><path d="M2 26h32L18 10 2 26z"/></svg>
                                     </button>
                                         {% endif %}
                                     {% endif %}
-                                    <div class="grid--cell fc-black-500 fs-title grid fd-column ai-center">{{ post_rating }}</div>
+                                    <div class="flex--item fc-black-500 fs-title d-flex fd-column ai-center">{{ post_rating }}</div>
                                     {% if user.is_authenticated %}
                                         {% if not liked_post_by_user %}
-                                    <button class="grid--cell s-btn s-btn__unset c-pointer" value="dislike" name="button">
+                                    <button class="flex--item s-btn s-btn__unset c-pointer" value="dislike" name="button">
                                         <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" height="36" viewBox="0 0 36 36"
                                              width="36"><path d="M2 10h32L18 26 2 10z"/></svg>
                                     </button>
@@ -63,8 +63,8 @@
                                 <pre><code>{{ post.content_code }}</code></pre>
                             </div>
                             <div class="mt24 mb12">
-                                <div class="post-taglist grid gs4 gsy fd-column">
-                                    <div class="grid ps-relative">
+                                <div class="post-taglist d-flex gs4 gsy fd-column">
+                                    <div class="d-flex ps-relative">
                                         {% for tag in post.tags.all %}
                                         <a class="post-tag" href="" rel="tag" title="">{{ tag }}</a>
                                         {% endfor %}
@@ -72,11 +72,11 @@
                                 </div>
                             </div>
                             <div class="mb0 ">
-                                <div class="mt16 grid gs8 gsy fw-wrap jc-end ai-start pt4 mb16">
-                                    <div class="grid--cell mr16 fl1 w96">
+                                <div class="mt16 d-flex gs8 gsy fw-wrap jc-end ai-start pt4 mb16">
+                                    <div class="flex--item mr16 fl1 w96">
                                         <div class="pt2" data-post-id="882233">
-                                            <div class="grid d-flex gs8 s-anchors s-anchors__muted fw-wrap">
-                                                <div class="grid--cell">
+                                            <div class="d-flex d-flex gs8 s-anchors s-anchors__muted fw-wrap">
+                                                <div class="flex--item">
                                                     {% if user.is_authenticated %}
                                                     <a href="{% url 'send-post' post.pk %}" title="">Share</a>
                                                     {% if user == post.user %}
@@ -87,7 +87,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="post-signature owner grid--cell">
+                                    <div class="post-signature owner flex--item">
                                         <div class="user-info ">
                                             <div class="user-action-time">Create at <span class="relativetime">{{ post.create_at }}</span>
                                             </div>
@@ -110,20 +110,20 @@
                                                     {% csrf_token %}
                                                     {% if user.is_authenticated %}
                                                         {% if comment not in comment_add_or_comment_like_by_user %}
-                                                    <button class="grid--cell s-btn s-btn__unset c-pointer" value="like" name="button">
+                                                    <button class="flex--item s-btn s-btn__unset c-pointer" value="like" name="button">
                                                         <svg aria-hidden="true" class="m0 svg-icon iconArrowUpLg"
                                                              width="12" height="12" viewBox="0 0 36 36"><path d="M2 26h32L18 10 2 26z"/></svg>
                                                     </button>
                                                         {% endif %}
                                                     {% endif %}
                                                     {% if comment.rating %}
-                                                    <div class="grid--cell fc-black-500 fs-title-small grid fd-column ai-center">{{ comment.rating }}</div>
+                                                    <div class="flex--item fc-black-500 fs-title-small d-flex fd-column ai-center">{{ comment.rating }}</div>
                                                     {% else %}
-                                                    <div class="grid--cell fc-black-500 fs-title-small grid fd-column ai-center"></div>
+                                                    <div class="flex--item fc-black-500 fs-title-small d-flex fd-column ai-center"></div>
                                                     {% endif %}
                                                     {% if user.is_authenticated %}
                                                         {% if comment not in comment_add_or_comment_like_by_user %}
-                                                    <button class="grid--cell s-btn s-btn__unset c-pointer" value="dislike" name="button">
+                                                    <button class="flex--item s-btn s-btn__unset c-pointer" value="dislike" name="button">
                                                         <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg"
                                                              width="12" height="12" viewBox="0 0 36 36"><path d="M2 10h32L18 26 2 10z"/></svg>
                                                     </button>
@@ -139,7 +139,7 @@
                                                 <span class="comment-date" dir="ltr"><span class="relativetime-clean">{{ comment.create_at }}</span></span>
                                                 {% if user == comment.user %}
                                                 <form method="post" action="{% url 'delete-comment' comment.pk %}">{% csrf_token %}
-                                                    <button class="grid--cell s-btn s-btn__danger ws-nowrap discard-question" style="padding: 2px; float: right"
+                                                    <button class="flex--item s-btn s-btn__danger ws-nowrap discard-question" style="padding: 2px; float: right"
                                                             type="submit" name="button" value="delete">Удалить</button>
                                                 </form>
                                                 {% endif %}
@@ -155,7 +155,7 @@
                                 <span class="dno">|</span>
                             </div>
                             <div>
-                                <form action="{% url 'detail' post.pk %}" class="grid--cell fl-grow1 px12"
+                                <form action="{% url 'detail' post.pk %}" class="flex--item fl-grow1 px12"
                                       method="post">{% csrf_token %}
                                     <textarea class="s-textarea"
                                               name="comment"

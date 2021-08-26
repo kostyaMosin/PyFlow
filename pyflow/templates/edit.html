@@ -13,12 +13,12 @@
 {% block content_text %}{{ post.content }}{% endblock %}
                                             
 {% block button %}
-<div class="grid gsx gs4 ai-center mt32">
-    <button class="grid--cell s-btn s-btn__primary s-btn__icon ws-nowrap"
+<div class="d-flex gsx gs4 ai-center mt32">
+    <button class="flex--item s-btn s-btn__primary s-btn__icon ws-nowrap"
             type="submit" name="button" value="save">Сохранить пост</button>
     {% if user.is_authenticated %}
     {% if user == post.user %}
-    <button class="grid--cell s-btn s-btn__danger ws-nowrap discard-question"
+    <button class="flex--item s-btn s-btn__danger ws-nowrap discard-question"
             type="submit" name="button" value="delete">Удалить пост</button>
     {% endif %}
     {% endif %}
